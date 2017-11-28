@@ -18,32 +18,43 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <crl/crl_winapi_semaphore.h>
+#pragma once
 
-#include <windows.h>
+#include <crl/crl_config.h>
+#include <memory>
+
+#ifndef CRL_USE_DISPATCH
+#error "This file should not be included by client-code directly."
+#endif // CRL_USE_DISPATCH
 
 namespace crl {
 
-auto semaphore::implementation::create() -> pointer {
-	auto result = CreateSemaphore(nullptr, 0, 1, nullptr);
-	if (!result) {
-		throw std::bad_alloc();
+class semaphore {
+public:
+	semaphore() : _handle(implementation::create()) {
 	}
-	return result;
-}
+	semaphore(const semaphore &other) = delete;
+	semaphore &operator=(const semaphore &other) = delete;
+	semaphore(semaphore &&other) noexcept
+	: _handle(std::move(other._handle)) {
+	}
+	semaphore &operator=(semaphore &&other) noexcept {
+		_handle = std::move(other._handle);
+		return *this;
+	}
 
-void semaphore::implementation::operator()(pointer value) {
-	if (value) {
-		CloseHandle(value);
-	}
+	void acquire();
+	void release();
+
+private:
+	// Hide dispatch_semaphore_t
+	struct implementation {
+		using pointer = void*;
+		static pointer create();
+		void operator()(pointer value);
+	};
+	std::unique_ptr<implementation::pointer, implementation> _handle;
+
 };
-
-void semaphore::acquire() {
-	WaitForSingleObject(_handle.get(), INFINITE);
-}
-
-void semaphore::release() {
-	ReleaseSemaphore(_handle.get(), 1, nullptr);
-}
 
 } // namespace crl

@@ -32,4 +32,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #error "Configuration is not supported."
 #endif // !_WIN64 && !_M_IX86
 
-#endif // _MSC_VER
+#elif defined __APPLE__ // _MSC_VER
+
+#define CRL_USE_DISPATCH
+
+#else // __APPLE__
+#error "Configuration is not supported."
+#endif // !_MSC_VER && !__APPLE__

@@ -18,32 +18,24 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <crl/crl_winapi_semaphore.h>
+#include <crl/crl_dispatch_async.h>
 
-#include <windows.h>
+#include <dispatch/dispatch.h>
 
-namespace crl {
+namespace crl::details {
 
-auto semaphore::implementation::create() -> pointer {
-	auto result = CreateSemaphore(nullptr, 0, 1, nullptr);
-	if (!result) {
-		throw std::bad_alloc();
-	}
-	return result;
+void async_plain(void (*callable)(void*), void *argument) {
+	dispatch_async_f(
+		dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+		argument,
+		callable);
 }
 
-void semaphore::implementation::operator()(pointer value) {
-	if (value) {
-		CloseHandle(value);
-	}
-};
-
-void semaphore::acquire() {
-	WaitForSingleObject(_handle.get(), INFINITE);
+void sync_plain(void (*callable)(void*), void *argument) {
+	dispatch_sync_f(
+		dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+		argument,
+		callable);
 }
 
-void semaphore::release() {
-	ReleaseSemaphore(_handle.get(), 1, nullptr);
-}
-
-} // namespace crl
+} // namespace crl::details

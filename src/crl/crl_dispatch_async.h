@@ -24,13 +24,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <crl/crl_utils.h>
 #include <type_traits>
 
-#ifndef CRL_USE_WINAPI
+#ifndef CRL_USE_DISPATCH
 #error "This file should not be included by client-code directly."
-#endif // CRL_USE_WINAPI
+#endif // CRL_USE_DISPATCH
 
 namespace crl::details {
 
 void async_plain(void (*callable)(void*), void *argument);
+void sync_plain(void (*callable)(void*), void *argument);
 
 } // namespace crl::details
 
@@ -59,14 +60,27 @@ inline void async(Callable &&callable) {
 	}
 }
 
-template <typename Callable>
+template <
+	typename Callable,
+	typename Return = decltype(std::declval<Callable>()())>
 inline void sync(Callable &&callable) {
-	semaphore waiter;
-	async([&] {
-		callable();
-		waiter.release();
-	});
-	waiter.acquire();
+	using Function = std::decay_t<Callable>;
+
+	if constexpr (details::is_plain_function_v<Function, Return>) {
+		using Plain = Return(*)();
+		const auto copy = static_cast<Plain>(callable);
+		details::sync_plain([](void *passed) {
+			const auto callable = static_cast<Plain>(passed);
+			(*callable)();
+		}, static_cast<void*>(copy));
+	} else {
+		const auto copy = new Function(std::forward<Callable>(callable));
+		details::sync_plain([](void *passed) {
+			const auto callable = static_cast<Function*>(passed);
+			const auto guard = details::finally([=] { delete callable; });
+			(*callable)();
+		}, static_cast<void*>(copy));
+	}
 }
 
 } // namespace crl

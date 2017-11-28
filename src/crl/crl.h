@@ -22,6 +22,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include <crl/crl_config.h>
 
-#ifdef CRL_USE_WINAPI
-#include "crl_winapi.h"
-#endif // CRL_USE_WINAPI
+#if defined CRL_USE_WINAPI
+#include <crl/crl_winapi.h>
+#elif defined CRL_USE_DISPATCH // CRL_USE_WINAPI
+#include <crl/crl_dispatch.h>
+#endif // CRL_USE_WINAPI || CRL_USE_DISPATCH
