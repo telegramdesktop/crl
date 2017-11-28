@@ -13,21 +13,45 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="crl">
+      <UniqueIdentifier>{24e445fd-75fc-475c-9191-6991d3bff35b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="crl_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="crl\crl_winapi_async.cpp">
+      <Filter>crl</Filter>
+    </ClCompile>
+    <ClCompile Include="crl\crl_winapi_queue.cpp">
+      <Filter>crl</Filter>
+    </ClCompile>
+    <ClCompile Include="crl\crl_winapi_semaphore.cpp">
+      <Filter>crl</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="crl\crl.h">
+      <Filter>crl</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\crl_winapi.h">
+      <Filter>crl</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\crl_winapi_async.h">
+      <Filter>crl</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\crl_winapi_queue.h">
+      <Filter>crl</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\crl_config.h">
+      <Filter>crl</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\crl_winapi_semaphore.h">
+      <Filter>crl</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\crl_utils.h">
+      <Filter>crl</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
