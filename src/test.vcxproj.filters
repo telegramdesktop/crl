@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="test.cpp" />
+    <ClCompile Include="crl\crl_winapi_async.cpp">
+      <Filter>crl</Filter>
+    </ClCompile>
+    <ClCompile Include="crl\crl_winapi_queue.cpp">
+      <Filter>crl</Filter>
+    </ClCompile>
+    <ClCompile Include="crl\crl_winapi_semaphore.cpp">
+      <Filter>crl</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="crl">
+      <UniqueIdentifier>{d2e7c077-1157-4f0b-bce6-7fb8523cd6e4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="crl\crl.h">
+      <Filter>crl</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\crl_config.h">
+      <Filter>crl</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\crl_utils.h">
+      <Filter>crl</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\crl_winapi.h">
+      <Filter>crl</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\crl_winapi_async.h">
+      <Filter>crl</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\crl_winapi_dll.h">
+      <Filter>crl</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\crl_winapi_queue.h">
+      <Filter>crl</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\crl_winapi_semaphore.h">
+      <Filter>crl</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

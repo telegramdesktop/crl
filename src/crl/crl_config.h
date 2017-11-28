@@ -21,5 +21,15 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #ifdef _MSC_VER
+
+#if defined _WIN64
 #define CRL_USE_WINAPI
+#define CRL_WINAPI_X64
+#elif defined _M_IX86 // _WIN64
+#define CRL_USE_WINAPI
+#define CRL_WINAPI_X86
+#else // _M_IX86
+#error "Configuration is not supported."
+#endif // !_WIN64 && !_M_IX86
+
 #endif // _MSC_VER

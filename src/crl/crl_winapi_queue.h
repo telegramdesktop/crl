@@ -50,13 +50,19 @@ public:
 	~queue();
 
 private:
+#if defined CRL_WINAPI_X64
+	static constexpr auto kLockFreeAlignment = 16;
+#elif defined CRL_WINAPI_X86 // CRL_WINAPI_X64
 	static constexpr auto kLockFreeAlignment = 8;
+#else // CRL_WINAPI_X86
+#error "Configuration is not supported."
+#endif // !CRL_WINAPI_X86 && !CRL_WINAPI_X64
 
 	// Hide WinAPI SLIST_HEADER
 	struct alignas(kLockFreeAlignment) lock_free_list {
-		void *Next; // Hide WinAPI SLIST_ENTRY
-		unsigned short Depth; // Hide WinAPI WORD
-		unsigned short CpuId; // Hide WinAPI WORD
+		void *Next__; // Hide WinAPI SLIST_ENTRY
+		unsigned short Depth__; // Hide WinAPI WORD
+		unsigned short CpuId__; // Hide WinAPI WORD
 	};
 
 	struct alignas(kLockFreeAlignment) BasicEntry;

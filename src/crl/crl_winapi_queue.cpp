@@ -21,6 +21,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <crl/crl_winapi_queue.h>
 
 #include <crl/crl_winapi_async.h>
+#include <crl/crl_winapi_dll.h>
 #include <windows.h>
 
 namespace crl {
@@ -47,6 +48,8 @@ static SLIST_ENTRY *ReverseList(
 	return entry;
 }
 
+PSLIST_ENTRY (NTAPI *RtlFirstEntrySList)(const SLIST_HEADER *ListHead) = nullptr;
+
 } // namespace
 
 queue::queue() : queue(&details::async_plain) {
@@ -55,13 +58,17 @@ queue::queue() : queue(&details::async_plain) {
 queue::queue(ProcessCaller caller)
 : _caller(caller)
 , _list(std::make_unique<lock_free_list>()) {
+	static auto initialize = [] {
+		const auto library = details::dll(
+			L"ntdll.dll",
+			details::dll::own_policy::load_and_leak);
+		library.load(RtlFirstEntrySList, "RtlFirstEntrySList");
+		return true;
+	}(); // TODO crl::once?..
+
 	static_assert(alignof(lock_free_list) == MEMORY_ALLOCATION_ALIGNMENT);
-	static_assert(sizeof(lock_free_list::Next) == sizeof(SLIST_HEADER::Next));
-	static_assert(offsetof(lock_free_list, Next) == offsetof(SLIST_HEADER, Next));
-	static_assert(sizeof(lock_free_list::Depth) == sizeof(SLIST_HEADER::Depth));
-	static_assert(offsetof(lock_free_list, Depth) == offsetof(SLIST_HEADER, Depth));
-	static_assert(sizeof(lock_free_list::CpuId) == sizeof(SLIST_HEADER::CpuId));
-	static_assert(offsetof(lock_free_list, CpuId) == offsetof(SLIST_HEADER, CpuId));
+	static_assert(alignof(lock_free_list) >= alignof(SLIST_HEADER));
+	static_assert(sizeof(lock_free_list) == sizeof(SLIST_HEADER));
 	InitializeSListHead(UnwrapList(_list.get()));
 }
 
@@ -82,12 +89,7 @@ void queue::wake_async() {
 }
 
 bool queue::empty() const {
-	auto pointer = &UnwrapList(_list.get())->Next.Next;
-	auto plain = reinterpret_cast<void * volatile *>(pointer);
-	return InterlockedCompareExchangePointerAcquire(
-		plain,
-		nullptr,
-		nullptr) == nullptr;
+	return RtlFirstEntrySList(UnwrapList(_list.get())) == nullptr;
 }
 
 void queue::process() {
