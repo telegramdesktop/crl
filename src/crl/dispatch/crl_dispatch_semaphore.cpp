@@ -18,14 +18,39 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <crl/crl_winapi_async.h>
+#include <crl/dispatch/crl_dispatch_semaphore.h>
 
-#include <concrt.h>
+#include <dispatch/dispatch.h>
 
-namespace crl::details {
+namespace crl {
+namespace {
 
-void async_plain(void (*callable)(void*), void *argument) {
-	Concurrency::CurrentScheduler::ScheduleTask(callable, argument);
+dispatch_semaphore_t Unwrap(void *value) {
+	return static_cast<dispatch_semaphore_t>(value);
 }
 
-} // namespace crl::details
+} // namespace
+
+auto semaphore::implementation::create() -> pointer {
+	auto result = dispatch_semaphore_create(0);
+	if (!result) {
+		throw std::bad_alloc();
+	}
+	return result;
+}
+
+void semaphore::implementation::operator()(pointer value) {
+	if (value) {
+		dispatch_release(Unwrap(value));
+	}
+};
+
+void semaphore::acquire() {
+	dispatch_semaphore_wait(Unwrap(_handle.get()), DISPATCH_TIME_FOREVER);
+}
+
+void semaphore::release() {
+	dispatch_semaphore_signal(Unwrap(_handle.get()));
+}
+
+} // namespace crl

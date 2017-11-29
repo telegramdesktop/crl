@@ -18,52 +18,32 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <crl/crl_dispatch_queue.h>
+#include <crl/winapi/crl_winapi_semaphore.h>
 
-#include <dispatch/dispatch.h>
+#include <windows.h>
 
 namespace crl {
-namespace {
 
-dispatch_queue_t Unwrap(void *value) {
-	return static_cast<dispatch_queue_t>(value);
-}
-
-} // namespace
-
-auto queue::implementation::create() -> pointer {
-	auto result = dispatch_queue_create(nullptr, DISPATCH_QUEUE_SERIAL);
+auto semaphore::implementation::create() -> pointer {
+	auto result = CreateSemaphore(nullptr, 0, 1, nullptr);
 	if (!result) {
 		throw std::bad_alloc();
 	}
 	return result;
 }
 
-void queue::implementation::operator()(pointer value) {
+void semaphore::implementation::operator()(pointer value) {
 	if (value) {
-		dispatch_release(Unwrap(value));
+		CloseHandle(value);
 	}
 };
 
-queue::queue() : _handle(implementation::create()) {
+void semaphore::acquire() {
+	WaitForSingleObject(_handle.get(), INFINITE);
 }
 
-void queue::async_plain(void (*callable)(void*), void *argument) {
-	dispatch_async_f(
-		Unwrap(_handle.get()),
-		argument,
-		callable);
-}
-
-void queue::sync_plain(void (*callable)(void*), void *argument) {
-	dispatch_sync_f(
-		Unwrap(_handle.get()),
-		argument,
-		callable);
-}
-
-queue::~queue() {
-	dispatch_sync_f(Unwrap(_handle.get()), nullptr, [](void*) {});
+void semaphore::release() {
+	ReleaseSemaphore(_handle.get(), 1, nullptr);
 }
 
 } // namespace crl

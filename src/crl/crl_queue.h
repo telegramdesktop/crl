@@ -18,39 +18,16 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <crl/crl_dispatch_semaphore.h>
+#pragma once
 
-#include <dispatch/dispatch.h>
+#include <crl/common/crl_common_config.h>
 
-namespace crl {
-namespace {
-
-dispatch_semaphore_t Unwrap(void *value) {
-	return static_cast<dispatch_semaphore_t>(value);
-}
-
-} // namespace
-
-auto semaphore::implementation::create() -> pointer {
-	auto result = dispatch_semaphore_create(0);
-	if (!result) {
-		throw std::bad_alloc();
-	}
-	return result;
-}
-
-void semaphore::implementation::operator()(pointer value) {
-	if (value) {
-		dispatch_release(Unwrap(value));
-	}
-};
-
-void semaphore::acquire() {
-	dispatch_semaphore_wait(Unwrap(_handle.get()), DISPATCH_TIME_FOREVER);
-}
-
-void semaphore::release() {
-	dispatch_semaphore_signal(Unwrap(_handle.get()));
-}
-
-} // namespace crl
+#if defined CRL_USE_WINAPI
+#include <crl/common/crl_common_queue.h>
+#elif defined CRL_USE_DISPATCH // CRL_USE_WINAPI
+#include <crl/dispatch/crl_dispatch_queue.h>
+#elif defined CRL_USE_QT // CRL_USE_DISPATCH
+#include <crl/common/crl_common_queue.h>
+#else // CRL_USE_QT
+#error "Configuration is not supported."
+#endif // !CRL_USE_WINAPI && !CRL_USE_DISPATCH && !CRL_USE_QT

@@ -18,9 +18,14 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#pragma once
+#include <crl/winapi/crl_winapi_async.h>
 
-#include <crl/crl_dispatch_semaphore.h>
-#include <crl/crl_dispatch_async.h>
-#include <crl/crl_dispatch_queue.h>
+#include <concrt.h>
 
+namespace crl::details {
+
+void async_plain(void (*callable)(void*), void *argument) {
+	Concurrency::CurrentScheduler::ScheduleTask(callable, argument);
+}
+
+} // namespace crl::details

@@ -18,32 +18,55 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <crl/crl_winapi_semaphore.h>
+#pragma once
 
-#include <windows.h>
+#include <crl/common/crl_common_config.h>
+#include <crl/common/crl_common_list.h>
+#include <atomic>
+
+#ifndef CRL_USE_WINAPI
+#error "This file should not be included by client-code directly."
+#endif // CRL_USE_WINAPI
 
 namespace crl {
 
-auto semaphore::implementation::create() -> pointer {
-	auto result = CreateSemaphore(nullptr, 0, 1, nullptr);
-	if (!result) {
-		throw std::bad_alloc();
-	}
-	return result;
-}
+class queue {
+public:
+	using ProcessCaller = void(*)(void (*callable)(void*), void *argument);
 
-void semaphore::implementation::operator()(pointer value) {
-	if (value) {
-		CloseHandle(value);
+	queue();
+
+	template <typename Callable>
+	void async(Callable &&callable) {
+		if (_list.push_is_first(std::forward<Callable>(callable))) {
+			wake_async();
+		}
 	}
+
+	template <typename Callable>
+	void sync(Callable &&callable) {
+		semaphore waiter;
+		async([&] {
+			callable();
+			waiter.release();
+		});
+		waiter.acquire();
+	}
+
+	~queue();
+
+private:
+	static void ProcessCallback(void *that);
+
+	queue(ProcessCaller caller);
+
+	void wake_async();
+	void process();
+
+	ProcessCaller _caller;
+	details::list _list;
+	std::atomic<bool> _queued = false;
+
 };
-
-void semaphore::acquire() {
-	WaitForSingleObject(_handle.get(), INFINITE);
-}
-
-void semaphore::release() {
-	ReleaseSemaphore(_handle.get(), 1, nullptr);
-}
 
 } // namespace crl

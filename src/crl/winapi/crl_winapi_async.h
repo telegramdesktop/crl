@@ -20,8 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <crl/crl_config.h>
-#include <crl/crl_utils.h>
+#include <crl/common/crl_common_config.h>
+#include <crl/common/crl_common_utils.h>
+#include <crl/crl_semaphore.h>
 #include <type_traits>
 
 #ifndef CRL_USE_WINAPI

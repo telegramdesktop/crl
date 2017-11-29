@@ -18,8 +18,24 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#pragma once
+#include <crl/dispatch/crl_dispatch_async.h>
 
-#include <crl/crl_semaphore.h>
-#include <crl/crl_async.h>
-#include <crl/crl_queue.h>
+#include <dispatch/dispatch.h>
+
+namespace crl::details {
+
+void async_plain(void (*callable)(void*), void *argument) {
+	dispatch_async_f(
+		dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+		argument,
+		callable);
+}
+
+void sync_plain(void (*callable)(void*), void *argument) {
+	dispatch_sync_f(
+		dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+		argument,
+		callable);
+}
+
+} // namespace crl::details

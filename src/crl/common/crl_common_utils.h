@@ -20,7 +20,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <crl/crl_config.h>
+#include <crl/common/crl_common_config.h>
 #include <utility>
 
 namespace crl::details {

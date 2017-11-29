@@ -18,24 +18,47 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#pragma once
+#include <crl/common/crl_common_queue.h>
 
-#ifdef _MSC_VER
+#include <crl/crl_async.h>
 
-#if defined _WIN64
-#define CRL_USE_WINAPI
-#define CRL_WINAPI_X64
-#elif defined _M_IX86 // _WIN64
-#define CRL_USE_WINAPI
-#define CRL_WINAPI_X86
-#else // _M_IX86
-#error "Configuration is not supported."
-#endif // !_WIN64 && !_M_IX86
+namespace crl {
 
-#elif defined __APPLE__ // _MSC_VER
+queue::queue() : queue(&details::async_plain) {
+}
 
-#define CRL_USE_DISPATCH
+queue::queue(ProcessCaller caller)
+: _caller(caller) {
+}
 
-#else // __APPLE__
-#error "Configuration is not supported."
-#endif // !_MSC_VER && !__APPLE__
+void queue::wake_async() {
+	auto expected = false;
+	if (_queued.compare_exchange_strong(expected, true)) {
+		_caller(
+			ProcessCallback,
+			static_cast<void*>(this));
+	}
+}
+
+void queue::process() {
+	if (!_list.process()) {
+		return;
+	}
+	_queued.store(false, std::memory_order_release);
+
+	if (!_list.empty()) {
+		wake_async();
+	}
+}
+
+queue::~queue() {
+	if (_list.push_sentinel()) {
+		wake_async();
+	}
+}
+
+void queue::ProcessCallback(void *that) {
+	static_cast<queue*>(that)->process();
+}
+
+} // namespace crl

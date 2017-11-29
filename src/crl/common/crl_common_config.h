@@ -18,24 +18,31 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <crl/crl_dispatch_async.h>
+#pragma once
 
-#include <dispatch/dispatch.h>
+#ifdef _MSC_VER
 
-namespace crl::details {
+#if defined _WIN64
+#define CRL_USE_WINAPI
+#define CRL_WINAPI_X64
+#elif defined _M_IX86 // _WIN64
+#define CRL_USE_WINAPI
+#define CRL_WINAPI_X86
+#else // _M_IX86
+#error "Configuration is not supported."
+#endif // !_WIN64 && !_M_IX86
 
-void async_plain(void (*callable)(void*), void *argument) {
-	dispatch_async_f(
-		dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-		argument,
-		callable);
-}
+#define CRL_USE_WINAPI_LIST
 
-void sync_plain(void (*callable)(void*), void *argument) {
-	dispatch_sync_f(
-		dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-		argument,
-		callable);
-}
+#elif defined __APPLE__ // _MSC_VER
 
-} // namespace crl::details
+#define CRL_USE_DISPATCH
+
+#elif __has_include(<QThreadPool>) // __APPLE__
+
+#define CRL_USE_QT
+#define CRL_USE_COMMON_LIST
+
+#else // Qt
+#error "Configuration is not supported."
+#endif // !_MSC_VER && !__APPLE__ && !Qt

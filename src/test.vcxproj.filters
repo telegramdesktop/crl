@@ -2,45 +2,93 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="test.cpp" />
-    <ClCompile Include="crl\crl_winapi_async.cpp">
-      <Filter>crl</Filter>
+    <ClCompile Include="crl\common\crl_common_queue.cpp">
+      <Filter>crl\common</Filter>
     </ClCompile>
-    <ClCompile Include="crl\crl_winapi_queue.cpp">
-      <Filter>crl</Filter>
+    <ClCompile Include="crl\dispatch\crl_dispatch_async.cpp">
+      <Filter>crl\dispatch</Filter>
     </ClCompile>
-    <ClCompile Include="crl\crl_winapi_semaphore.cpp">
-      <Filter>crl</Filter>
+    <ClCompile Include="crl\dispatch\crl_dispatch_queue.cpp">
+      <Filter>crl\dispatch</Filter>
+    </ClCompile>
+    <ClCompile Include="crl\dispatch\crl_dispatch_semaphore.cpp">
+      <Filter>crl\dispatch</Filter>
+    </ClCompile>
+    <ClCompile Include="crl\winapi\crl_winapi_async.cpp">
+      <Filter>crl\winapi</Filter>
+    </ClCompile>
+    <ClCompile Include="crl\winapi\crl_winapi_list.cpp">
+      <Filter>crl\winapi</Filter>
+    </ClCompile>
+    <ClCompile Include="crl\winapi\crl_winapi_semaphore.cpp">
+      <Filter>crl\winapi</Filter>
+    </ClCompile>
+    <ClCompile Include="crl\common\crl_common_list.cpp">
+      <Filter>crl\common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="crl">
       <UniqueIdentifier>{d2e7c077-1157-4f0b-bce6-7fb8523cd6e4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="crl\winapi">
+      <UniqueIdentifier>{39f32107-2138-4150-8275-5c30b5b15b11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="crl\qt">
+      <UniqueIdentifier>{26bc5660-62e9-4ce6-b777-c49ef0653124}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="crl\dispatch">
+      <UniqueIdentifier>{541e3382-374b-48e1-96ac-09f96b989ec6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="crl\common">
+      <UniqueIdentifier>{51e99f15-3837-452b-ac26-b8047c7de717}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="crl\crl.h">
       <Filter>crl</Filter>
     </ClInclude>
-    <ClInclude Include="crl\crl_config.h">
+    <ClInclude Include="crl\crl_async.h">
       <Filter>crl</Filter>
     </ClInclude>
-    <ClInclude Include="crl\crl_utils.h">
+    <ClInclude Include="crl\crl_queue.h">
       <Filter>crl</Filter>
     </ClInclude>
-    <ClInclude Include="crl\crl_winapi.h">
+    <ClInclude Include="crl\crl_semaphore.h">
       <Filter>crl</Filter>
     </ClInclude>
-    <ClInclude Include="crl\crl_winapi_async.h">
-      <Filter>crl</Filter>
+    <ClInclude Include="crl\common\crl_common_config.h">
+      <Filter>crl\common</Filter>
     </ClInclude>
-    <ClInclude Include="crl\crl_winapi_dll.h">
-      <Filter>crl</Filter>
+    <ClInclude Include="crl\common\crl_common_queue.h">
+      <Filter>crl\common</Filter>
     </ClInclude>
-    <ClInclude Include="crl\crl_winapi_queue.h">
-      <Filter>crl</Filter>
+    <ClInclude Include="crl\common\crl_common_utils.h">
+      <Filter>crl\common</Filter>
     </ClInclude>
-    <ClInclude Include="crl\crl_winapi_semaphore.h">
-      <Filter>crl</Filter>
+    <ClInclude Include="crl\dispatch\crl_dispatch_async.h">
+      <Filter>crl\dispatch</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\dispatch\crl_dispatch_queue.h">
+      <Filter>crl\dispatch</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\dispatch\crl_dispatch_semaphore.h">
+      <Filter>crl\dispatch</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\winapi\crl_winapi_async.h">
+      <Filter>crl\winapi</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\winapi\crl_winapi_dll.h">
+      <Filter>crl\winapi</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\winapi\crl_winapi_list.h">
+      <Filter>crl\winapi</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\winapi\crl_winapi_semaphore.h">
+      <Filter>crl\winapi</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\common\crl_common_list.h">
+      <Filter>crl\common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

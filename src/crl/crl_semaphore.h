@@ -20,41 +20,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <crl/crl_config.h>
-#include <memory>
+#include <crl/common/crl_common_config.h>
 
-#ifndef CRL_USE_DISPATCH
-#error "This file should not be included by client-code directly."
-#endif // CRL_USE_DISPATCH
-
-namespace crl {
-
-class semaphore {
-public:
-	semaphore() : _handle(implementation::create()) {
-	}
-	semaphore(const semaphore &other) = delete;
-	semaphore &operator=(const semaphore &other) = delete;
-	semaphore(semaphore &&other) noexcept
-	: _handle(std::move(other._handle)) {
-	}
-	semaphore &operator=(semaphore &&other) noexcept {
-		_handle = std::move(other._handle);
-		return *this;
-	}
-
-	void acquire();
-	void release();
-
-private:
-	// Hide dispatch_semaphore_t
-	struct implementation {
-		using pointer = void*;
-		static pointer create();
-		void operator()(pointer value);
-	};
-	std::unique_ptr<implementation::pointer, implementation> _handle;
-
-};
-
-} // namespace crl
+#if defined CRL_USE_WINAPI
+#include <crl/winapi/crl_winapi_semaphore.h>
+#elif defined CRL_USE_DISPATCH // CRL_USE_WINAPI
+#include <crl/dispatch/crl_dispatch_semaphore.h>
+#elif defined CRL_USE_QT // CRL_USE_DISPATCH
+#include <crl/qt/crl_qt_semaphore.h>
+#else // CRL_USE_QT
+#error "Configuration is not supported."
+#endif // !CRL_USE_WINAPI && !CRL_USE_DISPATCH && !CRL_USE_QT

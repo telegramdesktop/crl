@@ -20,38 +20,32 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <crl/crl_utils.h>
-#include <crl/crl_winapi_semaphore.h>
-#include <atomic>
+#include <crl/common/crl_common_config.h>
+
+#ifdef CRL_USE_WINAPI_LIST
+
+#include <crl/common/crl_common_utils.h>
+#include <crl/crl_semaphore.h>
 
 #ifndef CRL_USE_WINAPI
 #error "This file should not be included by client-code directly."
 #endif // CRL_USE_WINAPI
 
-namespace crl {
+namespace crl::details {
 
-class queue {
+class list {
 public:
-	using ProcessCaller = void(*)(void (*callable)(void*), void *argument);
-
-	queue();
+	list();
 
 	template <typename Callable>
-	void async(Callable &&callable) {
-		schedule(AllocateEntry(std::forward<Callable>(callable)));
+	bool push_is_first(Callable &&callable) {
+		return push_entry(AllocateEntry(std::forward<Callable>(callable)));
 	}
+	bool push_sentinel();
+	bool process();
+	bool empty() const;
 
-	template <typename Callable>
-	void sync(Callable &&callable) {
-		semaphore waiter;
-		async([&] {
-			callable();
-			waiter.release();
-		});
-		waiter.acquire();
-	}
-
-	~queue();
+	~list();
 
 private:
 #if defined CRL_WINAPI_X64
@@ -111,18 +105,13 @@ private:
 	static BasicEntry *AllocateSentinel();
 	static void ProcessCallback(void *that);
 
-	queue(ProcessCaller caller);
+	bool push_entry(BasicEntry *entry);
 
-	void schedule(BasicEntry *entry);
-	void wake_async();
-	bool empty() const;
-	void process();
-
-	ProcessCaller _caller;
-	const std::unique_ptr<lock_free_list> _list;
+	const std::unique_ptr<lock_free_list> _impl;
 	semaphore _semaphore;
-	std::atomic<bool> _queued = false;
 
 };
 
-} // namespace crl
+} // namespace crl::details
+
+#endif // CRL_USE_WINAPI_LIST
