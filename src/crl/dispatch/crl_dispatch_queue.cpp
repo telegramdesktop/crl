@@ -20,6 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include <crl/dispatch/crl_dispatch_queue.h>
 
+#ifdef CRL_USE_DISPATCH
+
 #include <dispatch/dispatch.h>
 
 namespace crl {
@@ -67,3 +69,5 @@ queue::~queue() {
 }
 
 } // namespace crl
+
+#endif // CRL_USE_DISPATCH

@@ -21,11 +21,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include <crl/common/crl_common_config.h>
-#include <memory>
 
-#ifndef CRL_USE_DISPATCH
-#error "This file should not be included by client-code directly."
-#endif // CRL_USE_DISPATCH
+#ifdef CRL_USE_DISPATCH
+
+#include <memory>
 
 namespace crl {
 
@@ -58,3 +57,5 @@ private:
 };
 
 } // namespace crl
+
+#endif // CRL_USE_DISPATCH

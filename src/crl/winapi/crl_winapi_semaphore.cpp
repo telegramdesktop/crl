@@ -20,6 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include <crl/winapi/crl_winapi_semaphore.h>
 
+#ifdef CRL_USE_WINAPI
+
 #include <windows.h>
 
 namespace crl {
@@ -47,3 +49,5 @@ void semaphore::release() {
 }
 
 } // namespace crl
+
+#endif // CRL_USE_WINAPI

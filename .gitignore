@@ -260,6 +260,10 @@ paket-files/
 __pycache__/
 *.pyc
 
+# Qt builds
+[Dd]ebugQt/
+[Rr]eleaseQt/
+
 # Xcode project
 xcuserdata
 *.xcworkspace

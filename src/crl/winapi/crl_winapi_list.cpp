@@ -36,9 +36,7 @@ PSLIST_ENTRY UnwrapEntry(void *wrapped) {
 	return static_cast<PSLIST_ENTRY>(wrapped);
 }
 
-static SLIST_ENTRY *ReverseList(
-		SLIST_ENTRY *entry,
-		SLIST_ENTRY *next) {
+SLIST_ENTRY *ReverseList(SLIST_ENTRY *entry, SLIST_ENTRY *next) {
 	entry->Next = nullptr;
 	do {
 		auto third = next->Next;

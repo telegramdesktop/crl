@@ -20,6 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include <crl/winapi/crl_winapi_async.h>
 
+#ifdef CRL_USE_WINAPI
+
 #include <concrt.h>
 
 namespace crl::details {
@@ -29,3 +31,5 @@ void async_plain(void (*callable)(void*), void *argument) {
 }
 
 } // namespace crl::details
+
+#endif // CRL_USE_WINAPI

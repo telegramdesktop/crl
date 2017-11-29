@@ -9,18 +9,30 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		DebugQt|x64 = DebugQt|x64
+		DebugQt|x86 = DebugQt|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
+		ReleaseQt|x64 = ReleaseQt|x64
+		ReleaseQt|x86 = ReleaseQt|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D591A56E-0E9B-4201-AE89-9A5EECBA1861}.Debug|x64.ActiveCfg = Debug|x64
 		{D591A56E-0E9B-4201-AE89-9A5EECBA1861}.Debug|x64.Build.0 = Debug|x64
 		{D591A56E-0E9B-4201-AE89-9A5EECBA1861}.Debug|x86.ActiveCfg = Debug|Win32
 		{D591A56E-0E9B-4201-AE89-9A5EECBA1861}.Debug|x86.Build.0 = Debug|Win32
+		{D591A56E-0E9B-4201-AE89-9A5EECBA1861}.DebugQt|x64.ActiveCfg = DebugQt|x64
+		{D591A56E-0E9B-4201-AE89-9A5EECBA1861}.DebugQt|x64.Build.0 = DebugQt|x64
+		{D591A56E-0E9B-4201-AE89-9A5EECBA1861}.DebugQt|x86.ActiveCfg = DebugQt|Win32
+		{D591A56E-0E9B-4201-AE89-9A5EECBA1861}.DebugQt|x86.Build.0 = DebugQt|Win32
 		{D591A56E-0E9B-4201-AE89-9A5EECBA1861}.Release|x64.ActiveCfg = Release|x64
 		{D591A56E-0E9B-4201-AE89-9A5EECBA1861}.Release|x64.Build.0 = Release|x64
 		{D591A56E-0E9B-4201-AE89-9A5EECBA1861}.Release|x86.ActiveCfg = Release|Win32
 		{D591A56E-0E9B-4201-AE89-9A5EECBA1861}.Release|x86.Build.0 = Release|Win32
+		{D591A56E-0E9B-4201-AE89-9A5EECBA1861}.ReleaseQt|x64.ActiveCfg = ReleaseQt|x64
+		{D591A56E-0E9B-4201-AE89-9A5EECBA1861}.ReleaseQt|x64.Build.0 = ReleaseQt|x64
+		{D591A56E-0E9B-4201-AE89-9A5EECBA1861}.ReleaseQt|x86.ActiveCfg = ReleaseQt|Win32
+		{D591A56E-0E9B-4201-AE89-9A5EECBA1861}.ReleaseQt|x86.Build.0 = ReleaseQt|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

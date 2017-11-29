@@ -20,6 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include <crl/dispatch/crl_dispatch_async.h>
 
+#ifdef CRL_USE_DISPATCH
+
 #include <dispatch/dispatch.h>
 
 namespace crl::details {
@@ -39,3 +41,5 @@ void sync_plain(void (*callable)(void*), void *argument) {
 }
 
 } // namespace crl::details
+
+#endif // CRL_USE_DISPATCH

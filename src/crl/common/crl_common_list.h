@@ -49,38 +49,26 @@ public:
 	~list();
 
 private:
-#if defined CRL_WINAPI_X64
-	static constexpr auto kLockFreeAlignment = 16;
-#elif defined CRL_WINAPI_X86 // CRL_WINAPI_X64
-	static constexpr auto kLockFreeAlignment = 8;
-#else // CRL_WINAPI_X86
-#error "Configuration is not supported."
-#endif // !CRL_WINAPI_X86 && !CRL_WINAPI_X64
-
-	// Hide WinAPI SLIST_HEADER
-	struct alignas(kLockFreeAlignment) lock_free_list {
-		void *Next__; // Hide WinAPI SLIST_ENTRY
-		unsigned short Depth__; // Hide WinAPI WORD
-		unsigned short CpuId__; // Hide WinAPI WORD
-	};
-
-	struct alignas(kLockFreeAlignment) BasicEntry;
+	struct BasicEntry;
 	using ProcessEntryMethod = void(*)(BasicEntry *entry);
 
-	struct alignas(kLockFreeAlignment) BasicEntry {
-		void *plain; // Hide WinAPI SLIST_ENTRY
-		ProcessEntryMethod process;
-	};
+	struct BasicEntry {
+		BasicEntry(ProcessEntryMethod method) : process(method) {
+		}
 
-	static_assert(std::is_pod_v<BasicEntry>);
-	static_assert(std::is_standard_layout_v<BasicEntry>);
-	static_assert(offsetof(BasicEntry, plain) == 0);
+		BasicEntry *next = nullptr;
+		ProcessEntryMethod process = nullptr;
+	};
 
 	template <typename Function>
 	struct Entry : BasicEntry {
-		Entry(Function &&function) : function(std::move(function)) {
+		Entry(Function &&function)
+		: BasicEntry(Entry::Process)
+		, function(std::move(function)) {
 		}
-		Entry(const Function &function) : function(function) {
+		Entry(const Function &function)
+		: BasicEntry(Entry::Process)
+		, function(function) {
 		}
 		Function function;
 
@@ -98,17 +86,16 @@ private:
 		using Function = std::decay_t<Callable>;
 		using Type = Entry<Function>;
 
-		auto result = new Type(std::forward<Callable>(callable));
-		result->process = &Type::Process;
-		return result;
+		return new Type(std::forward<Callable>(callable));
 	}
 
 	static BasicEntry *AllocateSentinel();
+	static BasicEntry *ReverseList(BasicEntry *entry, BasicEntry *next);
 	static void ProcessCallback(void *that);
 
 	bool push_entry(BasicEntry *entry);
 
-	const std::unique_ptr<lock_free_list> _impl;
+	std::atomic<BasicEntry*> _head = nullptr;
 	semaphore _semaphore;
 
 };

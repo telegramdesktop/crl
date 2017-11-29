@@ -22,15 +22,52 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include <crl/common/crl_common_config.h>
 
-#ifdef CRL_USE_WINAPI
+#ifdef CRL_USE_QT
 
 #include <crl/common/crl_common_utils.h>
 #include <crl/crl_semaphore.h>
 #include <type_traits>
 
+#include <QtCore/QThreadPool>
+
 namespace crl::details {
 
-void async_plain(void (*callable)(void*), void *argument);
+template <typename Callable>
+class Runnable : public QRunnable {
+public:
+	Runnable(Callable &&callable) : _callable(std::move(callable)) {
+	}
+
+	void run() override {
+		_callable();
+	}
+
+private:
+	Callable _callable;
+
+};
+
+template <typename Callable>
+inline auto create_runnable(Callable &&callable) {
+	if constexpr (std::is_reference_v<Callable>) {
+		auto copy = callable;
+		return create_runnable(std::move(copy));
+	} else {
+		return new Runnable<Callable>(std::move(callable));
+	}
+}
+
+template <typename Callable>
+inline void async_any(Callable &&callable) {
+	QThreadPool::globalInstance()->start(
+		create_runnable(std::forward<Callable>(callable)));
+}
+
+inline void async_plain(void (*callable)(void*), void *argument) {
+	async_any([=] {
+		callable(argument);
+	});
+}
 
 } // namespace crl::details
 
@@ -40,23 +77,7 @@ template <
 	typename Callable,
 	typename Return = decltype(std::declval<Callable>()())>
 inline void async(Callable &&callable) {
-	using Function = std::decay_t<Callable>;
-
-	if constexpr (details::is_plain_function_v<Function, Return>) {
-		using Plain = Return(*)();
-		const auto copy = static_cast<Plain>(callable);
-		details::async_plain([](void *passed) {
-			const auto callable = static_cast<Plain>(passed);
-			(*callable)();
-		}, static_cast<void*>(copy));
-	} else {
-		const auto copy = new Function(std::forward<Callable>(callable));
-		details::async_plain([](void *passed) {
-			const auto callable = static_cast<Function*>(passed);
-			const auto guard = details::finally([=] { delete callable; });
-			(*callable)();
-		}, static_cast<void*>(copy));
-	}
+	details::async_any(std::forward<Callable>(callable));
 }
 
 template <typename Callable>
@@ -71,4 +92,4 @@ inline void sync(Callable &&callable) {
 
 } // namespace crl
 
-#endif // CRL_USE_WINAPI
+#endif // CRL_USE_QT

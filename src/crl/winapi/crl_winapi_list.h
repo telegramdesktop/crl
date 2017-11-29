@@ -36,6 +36,8 @@ namespace crl::details {
 class list {
 public:
 	list();
+	list(const list &other) = delete;
+	list &operator=(const list &other) = delete;
 
 	template <typename Callable>
 	bool push_is_first(Callable &&callable) {

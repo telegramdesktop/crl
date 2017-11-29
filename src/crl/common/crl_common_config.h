@@ -20,7 +20,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#ifdef _MSC_VER
+#if defined _MSC_VER && !defined CRL_FORCE_QT
 
 #if defined _WIN64
 #define CRL_USE_WINAPI
@@ -32,13 +32,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #error "Configuration is not supported."
 #endif // !_WIN64 && !_M_IX86
 
+#ifdef CRL_FORCE_STD_LIST
+#define CRL_USE_COMMON_LIST
+#else // CRL_FORCE_STD_LIST
 #define CRL_USE_WINAPI_LIST
+#endif // !CRL_FORCE_STD_LIST
 
-#elif defined __APPLE__ // _MSC_VER
+#elif defined __APPLE__ && !defined CRL_FORCE_QT // _MSC_VER && !CRL_FORCE_QT
 
 #define CRL_USE_DISPATCH
 
-#elif __has_include(<QThreadPool>) // __APPLE__
+#elif __has_include(<QtCore/QThreadPool>) // __APPLE__ && !CRL_FORCE_QT
 
 #define CRL_USE_QT
 #define CRL_USE_COMMON_LIST

@@ -24,10 +24,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <crl/common/crl_common_list.h>
 #include <atomic>
 
-#ifndef CRL_USE_WINAPI
-#error "This file should not be included by client-code directly."
-#endif // CRL_USE_WINAPI
-
 namespace crl {
 
 class queue {
@@ -35,6 +31,8 @@ public:
 	using ProcessCaller = void(*)(void (*callable)(void*), void *argument);
 
 	queue();
+	queue(const queue &other) = delete;
+	queue &operator=(const queue &other) = delete;
 
 	template <typename Callable>
 	void async(Callable &&callable) {

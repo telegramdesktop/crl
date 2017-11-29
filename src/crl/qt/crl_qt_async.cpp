@@ -18,43 +18,8 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <crl/dispatch/crl_dispatch_semaphore.h>
+#include <crl/qt/crl_qt_async.h>
 
-#ifdef CRL_USE_DISPATCH
+#ifdef CRL_USE_QT
 
-#include <dispatch/dispatch.h>
-
-namespace crl {
-namespace {
-
-dispatch_semaphore_t Unwrap(void *value) {
-	return static_cast<dispatch_semaphore_t>(value);
-}
-
-} // namespace
-
-auto semaphore::implementation::create() -> pointer {
-	auto result = dispatch_semaphore_create(0);
-	if (!result) {
-		throw std::bad_alloc();
-	}
-	return result;
-}
-
-void semaphore::implementation::operator()(pointer value) {
-	if (value) {
-		dispatch_release(Unwrap(value));
-	}
-};
-
-void semaphore::acquire() {
-	dispatch_semaphore_wait(Unwrap(_handle.get()), DISPATCH_TIME_FOREVER);
-}
-
-void semaphore::release() {
-	dispatch_semaphore_signal(Unwrap(_handle.get()));
-}
-
-} // namespace crl
-
-#endif // CRL_USE_DISPATCH
+#endif // CRL_USE_QT

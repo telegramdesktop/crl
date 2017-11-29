@@ -26,52 +26,28 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <windows.h>
 
 namespace crl::details {
-namespace {
 
-PSLIST_HEADER UnwrapList(void *wrapped) {
-	return static_cast<PSLIST_HEADER>(wrapped);
-}
-
-PSLIST_ENTRY UnwrapEntry(void *wrapped) {
-	return static_cast<PSLIST_ENTRY>(wrapped);
-}
-
-static SLIST_ENTRY *ReverseList(
-		SLIST_ENTRY *entry,
-		SLIST_ENTRY *next) {
-	entry->Next = nullptr;
+auto list::ReverseList(BasicEntry *entry, BasicEntry *next) -> BasicEntry* {
+	entry->next = nullptr;
 	do {
-		auto third = next->Next;
-		next->Next = entry;
+		auto third = next->next;
+		next->next = entry;
 		entry = next;
 		next = third;
 	} while (next);
 	return entry;
 }
 
-PSLIST_ENTRY (NTAPI *RtlFirstEntrySList)(const SLIST_HEADER *ListHead) = nullptr;
-
-} // namespace
-
-list::list() : _impl(std::make_unique<lock_free_list>()) {
-	static auto initialize = [] {
-		const auto library = details::dll(
-			L"ntdll.dll",
-			details::dll::own_policy::load_and_leak);
-		library.load(RtlFirstEntrySList, "RtlFirstEntrySList");
-		return true;
-	}(); // TODO crl::once?..
-
-	static_assert(alignof(lock_free_list) == MEMORY_ALLOCATION_ALIGNMENT);
-	static_assert(alignof(lock_free_list) >= alignof(SLIST_HEADER));
-	static_assert(sizeof(lock_free_list) == sizeof(SLIST_HEADER));
-	InitializeSListHead(UnwrapList(_impl.get()));
-}
+list::list() = default;
 
 bool list::push_entry(BasicEntry *entry) {
-	return (InterlockedPushEntrySList(
-		UnwrapList(_impl.get()),
-		UnwrapEntry(&entry->plain)) == nullptr);
+	auto head = (BasicEntry*)nullptr;
+	while (true) {
+		if (_head.compare_exchange_weak(head, entry)) {
+			return (head == nullptr);
+		}
+		entry->next = head;
+	}
 }
 
 bool list::push_sentinel() {
@@ -79,17 +55,17 @@ bool list::push_sentinel() {
 }
 
 bool list::empty() const {
-	return RtlFirstEntrySList(UnwrapList(_impl.get())) == nullptr;
+	return (_head == nullptr);
 }
 
 bool list::process() {
-	if (auto entry = InterlockedFlushSList(UnwrapList(_impl.get()))) {
-		if (auto next = entry->Next) {
+	if (auto entry = _head.exchange(nullptr)) {
+		if (auto next = entry->next) {
 			entry = ReverseList(entry, next);
 		}
 		do {
-			auto basic = reinterpret_cast<BasicEntry*>(entry);
-			entry = entry->Next;
+			auto basic = entry;
+			entry = entry->next;
 
 			if (!basic->process) {
 				// Sentinel.
@@ -108,9 +84,7 @@ list::~list() {
 }
 
 auto list::AllocateSentinel() -> BasicEntry* {
-	auto result = new BasicEntry();
-	result->process = nullptr;
-	return result;
+	return new BasicEntry(nullptr);
 }
 
 } // namespace crl::details

@@ -26,6 +26,12 @@
     <ClCompile Include="crl\common\crl_common_list.cpp">
       <Filter>crl\common</Filter>
     </ClCompile>
+    <ClCompile Include="crl\qt\crl_qt_async.cpp">
+      <Filter>crl\qt</Filter>
+    </ClCompile>
+    <ClCompile Include="crl\qt\crl_qt_semaphore.cpp">
+      <Filter>crl\qt</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="crl">
@@ -89,6 +95,12 @@
     </ClInclude>
     <ClInclude Include="crl\common\crl_common_list.h">
       <Filter>crl\common</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\qt\crl_qt_async.h">
+      <Filter>crl\qt</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\qt\crl_qt_semaphore.h">
+      <Filter>crl\qt</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

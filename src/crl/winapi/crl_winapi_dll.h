@@ -20,6 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <crl/common/crl_common_config.h>
+
+#ifdef CRL_USE_WINAPI
+
 #include <windows.h>
 #include <exception>
 
@@ -72,3 +76,5 @@ private:
 };
 
 } // namespace crl::details
+
+#endif // CRL_USE_WINAPI

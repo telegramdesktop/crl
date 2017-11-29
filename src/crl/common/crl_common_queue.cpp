@@ -44,7 +44,7 @@ void queue::process() {
 	if (!_list.process()) {
 		return;
 	}
-	_queued.store(false, std::memory_order_release);
+	_queued.store(false);
 
 	if (!_list.empty()) {
 		wake_async();
