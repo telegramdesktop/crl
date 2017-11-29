@@ -20,6 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include <crl/common/crl_common_queue.h>
 
+#ifndef CRL_USE_DISPATCH
+
 #include <crl/crl_async.h>
 
 namespace crl {
@@ -62,3 +64,5 @@ void queue::ProcessCallback(void *that) {
 }
 
 } // namespace crl
+
+#endif // CRL_USE_DISPATCH

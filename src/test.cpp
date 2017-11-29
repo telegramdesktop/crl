@@ -17,13 +17,13 @@ void testOutput(crl::queue *queue) {
 	}
 }
 
+std::atomic<int> added = 0;
 int testCounting(crl::queue *queue) {
 	auto result = 0;
-	std::atomic<int> added = 0;
 	for (auto i = 0; i != 10000000; ++i) {
 		queue->async([i, &result] { ++result; });
 		if ((i % 10000) == 9999) {
-			crl::async([i, &added] { ++added; });
+			crl::async([i] { ++added; });
 			queue->sync([i, &result] { ++result; });
 		}
 	}
@@ -32,15 +32,15 @@ int testCounting(crl::queue *queue) {
 
 int main() {
 	crl::queue testQueue;
-	//testOutput(&testQueue);
-	//std::cout << "Hello, World!" << std::endl;
-	for (int i = 0; i != 5; ++i) {
-		auto start_time = std::chrono::high_resolution_clock::now();
-		auto result = testCounting(&testQueue);
-		auto end_time = std::chrono::high_resolution_clock::now();
-		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-		std::cout << "Time: " << ms.count() / 1000. << std::endl;
-	}
+	testOutput(&testQueue);
+	std::cout << "Hello, World!" << std::endl;
+//	for (int i = 0; i != 5; ++i) {
+//		auto start_time = std::chrono::high_resolution_clock::now();
+//		auto result = testCounting(&testQueue);
+//		auto end_time = std::chrono::high_resolution_clock::now();
+//		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+//		std::cout << "Time: " << ms.count() / 1000. << " (" << result << ")" << std::endl;
+//	}
 	int a = 0;
 	std::cin >> a;
 	return 0;

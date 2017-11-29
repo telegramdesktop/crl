@@ -102,6 +102,6 @@ private:
 
 } // namespace crl::details
 
-#else // CRL_USE_COMMON_LIST
+#elif !defined CRL_USE_DISPATCH // CRL_USE_COMMON_LIST
 #error "Configuration is not supported."
 #endif // !CRL_USE_WINAPI_LIST && !CRL_USE_COMMON_LIST

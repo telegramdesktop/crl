@@ -25,6 +25,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #ifdef CRL_USE_DISPATCH
 
 #include <crl/common/crl_common_utils.h>
+#include <memory>
 #include <atomic>
 
 namespace crl {

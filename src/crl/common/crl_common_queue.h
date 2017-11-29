@@ -21,6 +21,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include <crl/common/crl_common_config.h>
+
+#ifndef CRL_USE_DISPATCH
+
 #include <crl/common/crl_common_list.h>
 #include <atomic>
 
@@ -68,3 +71,5 @@ private:
 };
 
 } // namespace crl
+
+#endif // CRL_USE_DISPATCH

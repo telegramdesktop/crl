@@ -22,9 +22,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #if defined CRL_USE_COMMON_LIST
 
-#include <crl/winapi/crl_winapi_dll.h>
-#include <windows.h>
-
 namespace crl::details {
 
 auto list::ReverseList(BasicEntry *entry, BasicEntry *next) -> BasicEntry* {
