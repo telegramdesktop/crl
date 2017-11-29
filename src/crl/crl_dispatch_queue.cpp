@@ -64,7 +64,6 @@ void queue::sync_plain(void (*callable)(void*), void *argument) {
 
 queue::~queue() {
 	dispatch_sync_f(Unwrap(_handle.get()), nullptr, [](void*) {});
-	dispatch_release(Unwrap(_handle.get()));
 }
 
 } // namespace crl
