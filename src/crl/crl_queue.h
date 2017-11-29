@@ -22,7 +22,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include <crl/common/crl_common_config.h>
 
-#if defined CRL_USE_WINAPI
+#if defined CRL_USE_WINAPI || defined CRL_USE_COMMON_QUEUE
 #include <crl/common/crl_common_queue.h>
 #elif defined CRL_USE_DISPATCH // CRL_USE_WINAPI
 #include <crl/dispatch/crl_dispatch_queue.h>

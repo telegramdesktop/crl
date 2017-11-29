@@ -22,7 +22,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include <crl/common/crl_common_config.h>
 
-#ifndef CRL_USE_DISPATCH
+#if defined CRL_USE_COMMON_QUEUE || !defined CRL_USE_DISPATCH
 
 #include <crl/common/crl_common_list.h>
 #include <atomic>
@@ -72,4 +72,4 @@ private:
 
 } // namespace crl
 
-#endif // CRL_USE_DISPATCH
+#endif // CRL_USE_COMMON_QUEUE || !CRL_USE_DISPATCH

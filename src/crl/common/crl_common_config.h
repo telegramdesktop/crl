@@ -42,6 +42,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #define CRL_USE_DISPATCH
 
+#ifdef CRL_USE_COMMON_QUEUE
+#define CRL_USE_COMMON_LIST
+#endif // CRL_USE_COMMON_QUEUE
+
 #elif __has_include(<QtCore/QThreadPool>) // __APPLE__ && !CRL_FORCE_QT
 
 #define CRL_USE_QT

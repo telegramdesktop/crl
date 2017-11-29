@@ -423,6 +423,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					_DEBUG,
+					CRL_USE_COMMON_QUEUE,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -431,6 +437,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					NDEBUG,
+					CRL_USE_COMMON_QUEUE,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -450,7 +460,19 @@
 					"/usr/local/tdesktop/Qt-5.6.2/include",
 				);
 				LIBRARY_SEARCH_PATHS = "/usr/local/tdesktop/Qt-5.6.2/lib";
-				OTHER_LDFLAGS = "/usr/local/tdesktop/Qt-5.6.2/lib/libQt5Core_debug.a";
+				OTHER_LDFLAGS = (
+					"-framework",
+					CoreFoundation,
+					"-framework",
+					CoreServices,
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+					"/usr/local/tdesktop/Qt-5.6.2/lib/libqtpcre_debug.a",
+					"/usr/local/tdesktop/Qt-5.6.2/lib/libQt5Core_debug.a",
+					/usr/local/lib/libz.a,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -468,7 +490,19 @@
 					"/usr/local/tdesktop/Qt-5.6.2/include",
 				);
 				LIBRARY_SEARCH_PATHS = "/usr/local/tdesktop/Qt-5.6.2/lib";
-				OTHER_LDFLAGS = "/usr/local/tdesktop/Qt-5.6.2/lib/libQt5Core.a";
+				OTHER_LDFLAGS = (
+					"-framework",
+					CoreFoundation,
+					"-framework",
+					CoreServices,
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+					"/usr/local/tdesktop/Qt-5.6.2/lib/libqtpcre.a",
+					"/usr/local/tdesktop/Qt-5.6.2/lib/libQt5Core.a",
+					/usr/local/lib/libz.a,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

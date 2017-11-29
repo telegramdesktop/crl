@@ -32,15 +32,15 @@ int testCounting(crl::queue *queue) {
 
 int main() {
 	crl::queue testQueue;
-	testOutput(&testQueue);
+//	testOutput(&testQueue);
+	for (int i = 0; i != 5; ++i) {
+		auto start_time = std::chrono::high_resolution_clock::now();
+		auto result = testCounting(&testQueue);
+		auto end_time = std::chrono::high_resolution_clock::now();
+		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+		std::cout << "Time: " << ms.count() / 1000. << " (" << result << ")" << std::endl;
+	}
 	std::cout << "Hello, World!" << std::endl;
-//	for (int i = 0; i != 5; ++i) {
-//		auto start_time = std::chrono::high_resolution_clock::now();
-//		auto result = testCounting(&testQueue);
-//		auto end_time = std::chrono::high_resolution_clock::now();
-//		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-//		std::cout << "Time: " << ms.count() / 1000. << " (" << result << ")" << std::endl;
-//	}
 	int a = 0;
 	std::cin >> a;
 	return 0;
