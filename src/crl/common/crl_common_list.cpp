@@ -24,6 +24,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 namespace crl::details {
 
+list::list(semaphore *sentinel_semaphore)
+: _sentinel_semaphore(sentinel_semaphore) {
+}
+
 auto list::ReverseList(BasicEntry *entry, BasicEntry *next) -> BasicEntry* {
 	entry->next = nullptr;
 	do {
@@ -34,8 +38,6 @@ auto list::ReverseList(BasicEntry *entry, BasicEntry *next) -> BasicEntry* {
 	} while (next);
 	return entry;
 }
-
-list::list() = default;
 
 bool list::push_entry(BasicEntry *entry) {
 	auto head = (BasicEntry*)nullptr;
@@ -67,7 +69,7 @@ bool list::process() {
 			if (!basic->process) {
 				// Sentinel.
 				delete basic;
-				_semaphore.release();
+				_sentinel_semaphore->release();
 				return false;
 			}
 			basic->process(basic);
@@ -77,7 +79,9 @@ bool list::process() {
 }
 
 list::~list() {
-	_semaphore.acquire();
+	if (_sentinel_semaphore) {
+		_sentinel_semaphore->acquire();
+	}
 }
 
 auto list::AllocateSentinel() -> BasicEntry* {

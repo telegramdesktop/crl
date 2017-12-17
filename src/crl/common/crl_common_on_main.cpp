@@ -18,48 +18,56 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <crl/common/crl_common_queue.h>
+#include <crl/common/crl_common_on_main.h>
 
 #if defined CRL_USE_COMMON_QUEUE || !defined CRL_USE_DISPATCH
 
-#include <crl/crl_async.h>
+namespace {
+
+crl::queue *Queue/* = nullptr*/;
+std::atomic<int> Counter/* = 0*/;
+crl::details::main_queue_pointer Lifetime;
+
+} // namespace
+
+namespace crl::details {
+
+void main_queue_pointer::grab() {
+	auto counter = Counter.load(std::memory_order_acquire);
+	while (true) {
+		if (!counter) {
+			return;
+		} else if (Counter.compare_exchange_weak(counter, counter + 1)) {
+			_pointer = Queue;
+			return;
+		}
+	}
+}
+
+void main_queue_pointer::ungrab() {
+	if (_pointer) {
+		if (--Counter == 0) {
+			delete _pointer;
+		}
+		_pointer = nullptr;
+	}
+}
+
+void main_queue_pointer::create(queue_processor processor) {
+	if (Counter.load(std::memory_order_acquire) != 0) {
+		throw std::bad_alloc();
+	}
+	Queue = new queue(processor);
+	Counter.store(1, std::memory_order_release);
+	_pointer = Queue;
+}
+
+} // namespace crl::details
 
 namespace crl {
 
-queue::queue() : _list(&_sentinel_semaphore) {
-}
-
-queue::queue(queue_processor processor) : _main_processor(processor) {
-}
-
-void queue::wake_async() {
-	auto expected = false;
-	if (_queued.compare_exchange_strong(expected, true)) {
-		(_main_processor ? _main_processor : details::async_plain)(
-			ProcessCallback,
-			static_cast<void*>(this));
-	}
-}
-
-void queue::process() {
-	if (!_list.process()) {
-		return;
-	}
-	_queued.store(false);
-
-	if (!_list.empty()) {
-		wake_async();
-	}
-}
-
-queue::~queue() {
-	if (!_main_processor && _list.push_sentinel()) {
-		wake_async();
-	}
-}
-
-void queue::ProcessCallback(void *that) {
-	static_cast<queue*>(that)->process();
+void init_main_queue(queue_processor processor) {
+	Lifetime.create(processor);
 }
 
 } // namespace crl

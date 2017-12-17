@@ -35,7 +35,7 @@ namespace crl::details {
 
 class list {
 public:
-	list();
+	explicit list(semaphore *sentinel_semaphore = nullptr);
 	list(const list &other) = delete;
 	list &operator=(const list &other) = delete;
 
@@ -110,7 +110,7 @@ private:
 	bool push_entry(BasicEntry *entry);
 
 	const std::unique_ptr<lock_free_list> _impl;
-	semaphore _semaphore;
+	semaphore *_sentinel_semaphore = nullptr;
 
 };
 

@@ -25,7 +25,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #ifdef CRL_USE_QT
 
 #include <crl/common/crl_common_utils.h>
-#include <crl/crl_semaphore.h>
+#include <crl/common/crl_common_sync.h>
 #include <type_traits>
 
 #include <QtCore/QThreadPool>
@@ -78,16 +78,6 @@ template <
 	typename Return = decltype(std::declval<Callable>()())>
 inline void async(Callable &&callable) {
 	details::async_any(std::forward<Callable>(callable));
-}
-
-template <typename Callable>
-inline void sync(Callable &&callable) {
-	semaphore waiter;
-	async([&] {
-		callable();
-		waiter.release();
-	});
-	waiter.acquire();
 }
 
 } // namespace crl

@@ -237,6 +237,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalOptions>/SUBSYSTEM:CONSOLE",5.01" %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">
@@ -306,6 +307,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="crl\common\crl_common_list.cpp" />
+    <ClCompile Include="crl\common\crl_common_on_main.cpp" />
     <ClCompile Include="crl\common\crl_common_queue.cpp" />
     <ClCompile Include="crl\dispatch\crl_dispatch_async.cpp" />
     <ClCompile Include="crl\dispatch\crl_dispatch_queue.cpp" />
@@ -320,13 +322,17 @@
   <ItemGroup>
     <ClInclude Include="crl\common\crl_common_config.h" />
     <ClInclude Include="crl\common\crl_common_list.h" />
+    <ClInclude Include="crl\common\crl_common_on_main.h" />
     <ClInclude Include="crl\common\crl_common_queue.h" />
+    <ClInclude Include="crl\common\crl_common_sync.h" />
     <ClInclude Include="crl\common\crl_common_utils.h" />
     <ClInclude Include="crl\crl.h" />
     <ClInclude Include="crl\crl_async.h" />
+    <ClInclude Include="crl\crl_on_main.h" />
     <ClInclude Include="crl\crl_queue.h" />
     <ClInclude Include="crl\crl_semaphore.h" />
     <ClInclude Include="crl\dispatch\crl_dispatch_async.h" />
+    <ClInclude Include="crl\dispatch\crl_dispatch_on_main.h" />
     <ClInclude Include="crl\dispatch\crl_dispatch_queue.h" />
     <ClInclude Include="crl\dispatch\crl_dispatch_semaphore.h" />
     <ClInclude Include="crl\qt\crl_qt_async.h" />

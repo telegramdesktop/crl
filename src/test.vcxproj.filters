@@ -32,6 +32,9 @@
     <ClCompile Include="crl\qt\crl_qt_semaphore.cpp">
       <Filter>crl\qt</Filter>
     </ClCompile>
+    <ClCompile Include="crl\common\crl_common_on_main.cpp">
+      <Filter>crl\common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="crl">
@@ -101,6 +104,18 @@
     </ClInclude>
     <ClInclude Include="crl\qt\crl_qt_semaphore.h">
       <Filter>crl\qt</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\common\crl_common_sync.h">
+      <Filter>crl\common</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\dispatch\crl_dispatch_on_main.h">
+      <Filter>crl\dispatch</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\common\crl_common_on_main.h">
+      <Filter>crl\common</Filter>
+    </ClInclude>
+    <ClInclude Include="crl\crl_on_main.h">
+      <Filter>crl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

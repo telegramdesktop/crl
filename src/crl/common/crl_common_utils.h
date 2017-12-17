@@ -23,6 +23,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <crl/common/crl_common_config.h>
 #include <utility>
 
+namespace crl {
+
+using queue_processor = void(*)(void (*callable)(void*), void *argument);
+
+} // namespace crl
+
 namespace crl::details {
 
 using true_t = char;

@@ -21,6 +21,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include <crl/crl_semaphore.h>
-#include <crl/crl_async.h>
-#include <crl/crl_queue.h>
-#include <crl/crl_on_main.h>
+
+namespace crl {
+
+template <typename Callable>
+inline void sync(Callable &&callable) {
+	semaphore waiter;
+	async([&] {
+		const auto guard = details::finally([&] { waiter.release(); });
+		callable();
+	});
+	waiter.acquire();
+}
+
+} // namespace crl

@@ -25,7 +25,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #ifdef CRL_USE_WINAPI
 
 #include <crl/common/crl_common_utils.h>
-#include <crl/crl_semaphore.h>
+#include <crl/common/crl_common_sync.h>
 #include <type_traits>
 
 namespace crl::details {
@@ -57,16 +57,6 @@ inline void async(Callable &&callable) {
 			(*callable)();
 		}, static_cast<void*>(copy));
 	}
-}
-
-template <typename Callable>
-inline void sync(Callable &&callable) {
-	semaphore waiter;
-	async([&] {
-		callable();
-		waiter.release();
-	});
-	waiter.acquire();
 }
 
 } // namespace crl

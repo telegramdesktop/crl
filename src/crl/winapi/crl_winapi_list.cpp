@@ -51,7 +51,9 @@ PSLIST_ENTRY (NTAPI *RtlFirstEntrySList)(const SLIST_HEADER *ListHead) = nullptr
 
 } // namespace
 
-list::list() : _impl(std::make_unique<lock_free_list>()) {
+list::list(semaphore *sentinel_semaphore)
+: _impl(std::make_unique<lock_free_list>())
+, _sentinel_semaphore(sentinel_semaphore) {
 	static auto initialize = [] {
 		const auto library = details::dll(
 			L"ntdll.dll",
@@ -92,7 +94,7 @@ bool list::process() {
 			if (!basic->process) {
 				// Sentinel.
 				delete basic;
-				_semaphore.release();
+				_sentinel_semaphore->release();
 				return false;
 			}
 			basic->process(basic);
@@ -102,7 +104,9 @@ bool list::process() {
 }
 
 list::~list() {
-	_semaphore.acquire();
+	if (_sentinel_semaphore) {
+		_sentinel_semaphore->acquire();
+	}
 }
 
 auto list::AllocateSentinel() -> BasicEntry* {

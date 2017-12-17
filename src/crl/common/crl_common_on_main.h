@@ -24,56 +24,61 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #if defined CRL_USE_COMMON_QUEUE || !defined CRL_USE_DISPATCH
 
-#include <crl/common/crl_common_list.h>
-#include <crl/common/crl_common_utils.h>
+#include <crl/common/crl_common_queue.h>
 #include <atomic>
 
-namespace crl {
-namespace details {
-class main_queue_pointer;
-} // namespace details
+namespace crl::details {
 
-class queue {
+extern queue *MainQueue;
+extern std::atomic<int> MainQueueCounter;
+
+class main_queue_pointer {
 public:
-	queue();
-	queue(const queue &other) = delete;
-	queue &operator=(const queue &other) = delete;
-
-	template <typename Callable>
-	void async(Callable &&callable) {
-		if (_list.push_is_first(std::forward<Callable>(callable))) {
-			wake_async();
-		}
+	main_queue_pointer() {
+		grab();
 	}
 
-	template <typename Callable>
-	void sync(Callable &&callable) {
-		semaphore waiter;
-		async([&] {
-			const auto guard = details::finally([&] { waiter.release(); });
-			callable();
-		});
-		waiter.acquire();
+	void create(queue_processor processor);
+
+	explicit operator bool() const {
+		return _pointer != nullptr;
 	}
 
-	~queue();
+	queue *operator->() const {
+		return _pointer;
+	}
+
+	~main_queue_pointer() {
+		ungrab();
+	}
 
 private:
-	friend class details::main_queue_pointer;
+	void grab();
+	void ungrab();
 
-	static void ProcessCallback(void *that);
-
-	queue(queue_processor processor);
-
-	void wake_async();
-	void process();
-
-	queue_processor _main_processor = nullptr;
-	semaphore _sentinel_semaphore;
-	details::list _list;
-	std::atomic<bool> _queued = false;
+	queue *_pointer = nullptr;
 
 };
+
+} // namespace crl::details
+
+namespace crl {
+
+void init_main_queue(queue_processor processor);
+
+template <typename Callable>
+inline void on_main(Callable &&callable) {
+	if (const auto main = details::main_queue_pointer()) {
+		main->async(std::forward<Callable>(callable));
+	}
+}
+
+template <typename Callable>
+inline void on_main_sync(Callable &&callable) {
+	if (const auto main = details::main_queue_pointer()) {
+		main->sync(std::forward<Callable>(callable));
+	}
+}
 
 } // namespace crl
 

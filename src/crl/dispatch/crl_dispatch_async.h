@@ -29,29 +29,32 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 namespace crl::details {
 
-void async_plain(void (*callable)(void*), void *argument);
-void sync_plain(void (*callable)(void*), void *argument);
+void *background_queue_dispatch();
+void *main_queue_dispatch();
 
-} // namespace crl::details
-
-namespace crl {
+void on_queue_async(void *queue, void (*callable)(void*), void *argument);
+void on_queue_sync(void *queue, void (*callable)(void*), void *argument);
 
 template <
+	typename Invoker,
 	typename Callable,
 	typename Return = decltype(std::declval<Callable>()())>
-inline void async(Callable &&callable) {
+inline void on_queue_invoke(
+		void *queue,
+		Invoker invoker,
+		Callable &&callable) {
 	using Function = std::decay_t<Callable>;
 
 	if constexpr (details::is_plain_function_v<Function, Return>) {
 		using Plain = Return(*)();
 		const auto copy = static_cast<Plain>(callable);
-		details::async_plain([](void *passed) {
+		invoker(queue, [](void *passed) {
 			const auto callable = static_cast<Plain>(passed);
 			(*callable)();
 		}, static_cast<void*>(copy));
 	} else {
 		const auto copy = new Function(std::forward<Callable>(callable));
-		details::async_plain([](void *passed) {
+		invoker(queue, [](void *passed) {
 			const auto callable = static_cast<Function*>(passed);
 			const auto guard = details::finally([=] { delete callable; });
 			(*callable)();
@@ -59,27 +62,28 @@ inline void async(Callable &&callable) {
 	}
 }
 
-template <
-	typename Callable,
-	typename Return = decltype(std::declval<Callable>()())>
-inline void sync(Callable &&callable) {
-	using Function = std::decay_t<Callable>;
+void async_plain(void (*callable)(void*), void *argument) {
+	return on_queue_async(background_queue_dispatch(), callable, argument);
+}
 
-	if constexpr (details::is_plain_function_v<Function, Return>) {
-		using Plain = Return(*)();
-		const auto copy = static_cast<Plain>(callable);
-		details::sync_plain([](void *passed) {
-			const auto callable = static_cast<Plain>(passed);
-			(*callable)();
-		}, static_cast<void*>(copy));
-	} else {
-		const auto copy = new Function(std::forward<Callable>(callable));
-		details::sync_plain([](void *passed) {
-			const auto callable = static_cast<Function*>(passed);
-			const auto guard = details::finally([=] { delete callable; });
-			(*callable)();
-		}, static_cast<void*>(copy));
-	}
+} // namespace crl::details
+
+namespace crl {
+
+template <typename Callable>
+inline void async(Callable &&callable) {
+	return details::on_queue_invoke(
+		details::background_queue_dispatch(),
+		details::on_queue_async,
+		std::forward<Callable>(callable));
+}
+
+template <typename Callable>
+inline void sync(Callable &&callable) {
+	return details::on_queue_sync(
+		details::background_queue_dispatch(),
+		details::on_queue_sync,
+		std::forward<Callable>(callable));
 }
 
 } // namespace crl

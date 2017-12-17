@@ -26,16 +26,24 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 namespace crl::details {
 
-void async_plain(void (*callable)(void*), void *argument) {
+void *background_queue_dispatch() {
+	return dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+}
+
+void *main_queue_dispatch() {
+	return dispatch_get_main_queue();
+}
+
+void on_queue_async(void *queue, void (*callable)(void*), void *argument) {
 	dispatch_async_f(
-		dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+		static_cast<dispatch_queue_t>(queue),
 		argument,
 		callable);
 }
 
-void sync_plain(void (*callable)(void*), void *argument) {
+void on_queue_sync(void *queue, void (*callable)(void*), void *argument) {
 	dispatch_sync_f(
-		dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+		static_cast<dispatch_queue_t>(queue),
 		argument,
 		callable);
 }

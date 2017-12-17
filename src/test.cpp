@@ -4,6 +4,7 @@
 #include <iostream>
 #include <chrono>
 #include <numeric>
+#include <deque>
 
 void testOutput(crl::queue *queue) {
 	for (auto i = 0; i != 1000; ++i) {
@@ -50,6 +51,47 @@ int testCounting(crl::queue (&queues)[kQueueCount]) {
 	return std::accumulate(std::begin(result), std::end(result), 0) + added;
 }
 
+struct MainRequest {
+	void (*callable)(void*);
+	void *argument;
+};
+std::deque<MainRequest> MainRequests;
+
+void DrainMainRequests() {
+	while (!MainRequests.empty()) {
+		auto front = MainRequests.front();
+		MainRequests.pop_front();
+		front.callable(front.argument);
+	}
+}
+
+void testMainQueue() {
+	auto count = 0;
+	auto add = [&] {
+		crl::on_main([&] {
+			count += 10;
+			crl::on_main([&] {
+				count += 20;
+				crl::on_main([&] {
+					count += 30;
+				});
+			});
+		});
+	};
+	add();
+	crl::init_main_queue([](void (*callable)(void*), void *argument) {
+		MainRequests.push_back({ callable, argument });
+	});
+	DrainMainRequests();
+	auto a = count;
+	add();
+	auto b = count;
+	add();
+	DrainMainRequests();
+	auto c = count;
+	std::cout << "Should be (0, 0, 120): " << a << ", " << b << ", " << c << std::endl;
+}
+
 int main() {
 	crl::queue testQueue[kQueueCount];
 //	testOutput(&testQueue[0]);
@@ -60,6 +102,7 @@ int main() {
 		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
 		std::cout << "Time: " << ms.count() / 1000. << " (" << result << ")" << std::endl;
 	}
+	testMainQueue();
 	std::cout << "Finished." << std::endl;
 	int a = 0;
 	std::cin >> a;

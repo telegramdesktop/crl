@@ -20,7 +20,34 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <crl/crl_semaphore.h>
-#include <crl/crl_async.h>
-#include <crl/crl_queue.h>
-#include <crl/crl_on_main.h>
+#include <crl/common/crl_common_config.h>
+
+#if defined CRL_USE_DISPATCH && !defined CRL_USE_COMMON_QUEUE
+
+#include <crl/dispatch/crl_dispatch_async.h>
+#include <crl/common/crl_common_utils.h>
+
+namespace crl {
+
+inline void init_main_queue(queue_processor processor) {
+}
+
+template <typename Callable>
+inline void on_main(Callable &&callable) {
+	return details::on_queue_invoke(
+		details::main_queue_dispatch(),
+		details::on_queue_async,
+		std::forward<Callable>(callable));
+}
+
+template <typename Callable>
+inline void on_main_sync(Callable &&callable) {
+	return details::on_queue_sync(
+		details::main_queue_dispatch(),
+		details::on_queue_sync,
+		std::forward<Callable>(callable));
+}
+
+} // namespace crl
+
+#endif // CRL_USE_DISPATCH && !CRL_USE_COMMON_QUEUE

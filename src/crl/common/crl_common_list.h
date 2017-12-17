@@ -36,7 +36,7 @@ namespace crl::details {
 
 class list {
 public:
-	list();
+	explicit list(semaphore *sentinel_semaphore = nullptr);
 
 	template <typename Callable>
 	bool push_is_first(Callable &&callable) {
@@ -96,7 +96,7 @@ private:
 	bool push_entry(BasicEntry *entry);
 
 	std::atomic<BasicEntry*> _head = nullptr;
-	semaphore _semaphore;
+	semaphore *_sentinel_semaphore = nullptr;
 
 };
 
