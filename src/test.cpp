@@ -41,7 +41,7 @@ int testCounting(crl::queue (&queues)[kQueueCount]) {
 		}
 		if ((i % 10000) == 9999) {
 			crl::async([i] { ++added; });
-			const auto j = ((i + 1) / 10000) % kQueueCount;
+//			const auto j = ((i + 1) / 10000) % kQueueCount;
 //			queues[j].sync([j, &result] { ++result[j].value; });
 		}
 	}

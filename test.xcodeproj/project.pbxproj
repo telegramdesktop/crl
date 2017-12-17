@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		070FD44A1FCDEB77000B3309 /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 070FD4491FCDEB77000B3309 /* test.cpp */; };
+		074875A41FE6D2BC003256CC /* crl_common_on_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 074875A21FE6D2BC003256CC /* crl_common_on_main.cpp */; };
+		074875A71FE6D384003256CC /* crl_common_on_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 074875A21FE6D2BC003256CC /* crl_common_on_main.cpp */; };
 		07F40D1D1FCED5020081B46F /* crl_common_queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 07F40D171FCED5020081B46F /* crl_common_queue.cpp */; };
 		07F40D1E1FCED5020081B46F /* crl_common_list.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 07F40D191FCED5020081B46F /* crl_common_list.cpp */; };
 		07F40D251FCED50B0081B46F /* crl_dispatch_async.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 07F40D1F1FCED50A0081B46F /* crl_dispatch_async.cpp */; };
@@ -56,6 +58,11 @@
 		070FD4371FCDEB70000B3309 /* crl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crl.h; path = src/crl/crl.h; sourceTree = "<group>"; };
 		070FD4491FCDEB77000B3309 /* test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test.cpp; path = src/test.cpp; sourceTree = "<group>"; };
 		0735A9821FCDDEA2000E7B86 /* test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test; sourceTree = BUILT_PRODUCTS_DIR; };
+		074875A11FE6D2BC003256CC /* crl_common_sync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crl_common_sync.h; path = src/crl/common/crl_common_sync.h; sourceTree = "<group>"; };
+		074875A21FE6D2BC003256CC /* crl_common_on_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = crl_common_on_main.cpp; path = src/crl/common/crl_common_on_main.cpp; sourceTree = "<group>"; };
+		074875A31FE6D2BC003256CC /* crl_common_on_main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crl_common_on_main.h; path = src/crl/common/crl_common_on_main.h; sourceTree = "<group>"; };
+		074875A51FE6D2CE003256CC /* crl_dispatch_on_main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crl_dispatch_on_main.h; path = src/crl/dispatch/crl_dispatch_on_main.h; sourceTree = "<group>"; };
+		074875A61FE6D2D9003256CC /* crl_on_main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crl_on_main.h; path = src/crl/crl_on_main.h; sourceTree = "<group>"; };
 		07F40D111FCED4DD0081B46F /* crl_async.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crl_async.h; path = src/crl/crl_async.h; sourceTree = "<group>"; };
 		07F40D121FCED4DD0081B46F /* crl_semaphore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crl_semaphore.h; path = src/crl/crl_semaphore.h; sourceTree = "<group>"; };
 		07F40D131FCED4DD0081B46F /* crl_queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crl_queue.h; path = src/crl/crl_queue.h; sourceTree = "<group>"; };
@@ -120,6 +127,7 @@
 				07F40D151FCED4E80081B46F /* qt */,
 				07F40D161FCED4ED0081B46F /* winapi */,
 				07F40D111FCED4DD0081B46F /* crl_async.h */,
+				074875A61FE6D2D9003256CC /* crl_on_main.h */,
 				07F40D131FCED4DD0081B46F /* crl_queue.h */,
 				07F40D121FCED4DD0081B46F /* crl_semaphore.h */,
 				070FD4371FCDEB70000B3309 /* crl.h */,
@@ -150,8 +158,11 @@
 				07F40D1B1FCED5020081B46F /* crl_common_config.h */,
 				07F40D191FCED5020081B46F /* crl_common_list.cpp */,
 				07F40D1A1FCED5020081B46F /* crl_common_list.h */,
+				074875A21FE6D2BC003256CC /* crl_common_on_main.cpp */,
+				074875A31FE6D2BC003256CC /* crl_common_on_main.h */,
 				07F40D171FCED5020081B46F /* crl_common_queue.cpp */,
 				07F40D1C1FCED5020081B46F /* crl_common_queue.h */,
+				074875A11FE6D2BC003256CC /* crl_common_sync.h */,
 				07F40D181FCED5020081B46F /* crl_common_utils.h */,
 			);
 			name = common;
@@ -162,6 +173,7 @@
 			children = (
 				07F40D1F1FCED50A0081B46F /* crl_dispatch_async.cpp */,
 				07F40D211FCED50A0081B46F /* crl_dispatch_async.h */,
+				074875A51FE6D2CE003256CC /* crl_dispatch_on_main.h */,
 				07F40D231FCED50B0081B46F /* crl_dispatch_queue.cpp */,
 				07F40D241FCED50B0081B46F /* crl_dispatch_queue.h */,
 				07F40D201FCED50A0081B46F /* crl_dispatch_semaphore.cpp */,
@@ -282,6 +294,7 @@
 				07F40D1E1FCED5020081B46F /* crl_common_list.cpp in Sources */,
 				07F40D1D1FCED5020081B46F /* crl_common_queue.cpp in Sources */,
 				07F40D261FCED50B0081B46F /* crl_dispatch_semaphore.cpp in Sources */,
+				074875A41FE6D2BC003256CC /* crl_common_on_main.cpp in Sources */,
 				07F40D2D1FCED5190081B46F /* crl_qt_semaphore.cpp in Sources */,
 				070FD44A1FCDEB77000B3309 /* test.cpp in Sources */,
 				07F40D271FCED50B0081B46F /* crl_dispatch_queue.cpp in Sources */,
@@ -292,6 +305,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				074875A71FE6D384003256CC /* crl_common_on_main.cpp in Sources */,
 				07F40D431FCED9AD0081B46F /* test.cpp in Sources */,
 				07F40D441FCED9AD0081B46F /* crl_common_list.cpp in Sources */,
 				07F40D451FCED9AD0081B46F /* crl_common_queue.cpp in Sources */,
@@ -340,7 +354,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -427,7 +441,6 @@
 					"DEBUG=1",
 					"$(inherited)",
 					_DEBUG,
-					CRL_USE_COMMON_QUEUE,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

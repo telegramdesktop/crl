@@ -62,7 +62,7 @@ inline void on_queue_invoke(
 	}
 }
 
-void async_plain(void (*callable)(void*), void *argument) {
+inline void async_plain(void (*callable)(void*), void *argument) {
 	return on_queue_async(background_queue_dispatch(), callable, argument);
 }
 
