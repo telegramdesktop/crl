@@ -46,9 +46,9 @@ inline void async(Callable &&callable) {
 		using Plain = Return(*)();
 		const auto copy = static_cast<Plain>(callable);
 		details::async_plain([](void *passed) {
-			const auto callable = static_cast<Plain>(passed);
+			const auto callable = reinterpret_cast<Plain>(passed);
 			(*callable)();
-		}, static_cast<void*>(copy));
+		}, reinterpret_cast<void*>(copy));
 	} else {
 		const auto copy = new Function(std::forward<Callable>(callable));
 		details::async_plain([](void *passed) {
