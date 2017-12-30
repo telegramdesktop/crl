@@ -22,16 +22,40 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include <crl/common/crl_common_config.h>
 
-#if defined CRL_USE_WINAPI || defined CRL_USE_COMMON_QUEUE
-#include <crl/common/crl_common_on_main.h>
-#elif defined CRL_USE_DISPATCH // CRL_USE_WINAPI
-#include <crl/dispatch/crl_dispatch_on_main.h>
-#elif defined CRL_USE_QT // CRL_USE_DISPATCH
-#include <crl/common/crl_common_on_main.h>
-#else // CRL_USE_QT
-#error "Configuration is not supported."
-#endif // !CRL_USE_WINAPI && !CRL_USE_DISPATCH && !CRL_USE_QT
+#include <memory>
 
-#include <crl/common/crl_common_on_main_guarded.h>
-#include <crl/common/crl_common_guards.h>
-#include <crl/qt/crl_qt_guards.h>
+namespace crl {
+
+template <typename T, typename Enable>
+struct guard_traits;
+
+
+template <typename T>
+struct guard_traits<std::weak_ptr<T>, void> {
+	static std::weak_ptr<T> create(const std::weak_ptr<T> &value) {
+		return value;
+	}
+	static std::weak_ptr<T> create(std::weak_ptr<T> &&value) {
+		return std::move(value);
+	}
+	static bool check(const std::weak_ptr<T> &guard) {
+		return guard.lock() != nullptr;
+	}
+
+};
+
+template <typename T>
+struct guard_traits<std::shared_ptr<T>, void> {
+	static std::weak_ptr<T> create(const std::shared_ptr<T> &value) {
+		return value;
+	}
+	static std::weak_ptr<T> create(std::shared_ptr<T> &&value) {
+		return value;
+	}
+	static bool check(const std::weak_ptr<T> &guard) {
+		return guard.lock() != nullptr;
+	}
+
+};
+
+} // namespace crl
