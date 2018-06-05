@@ -328,6 +328,7 @@
     <ClInclude Include="crl\common\crl_common_utils.h" />
     <ClInclude Include="crl\crl.h" />
     <ClInclude Include="crl\crl_async.h" />
+    <ClInclude Include="crl\crl_object_on_queue.h" />
     <ClInclude Include="crl\crl_on_main.h" />
     <ClInclude Include="crl\crl_queue.h" />
     <ClInclude Include="crl\crl_semaphore.h" />

@@ -117,5 +117,8 @@
     <ClInclude Include="crl\crl_on_main.h">
       <Filter>crl</Filter>
     </ClInclude>
+    <ClInclude Include="crl\crl_object_on_queue.h">
+      <Filter>crl</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
