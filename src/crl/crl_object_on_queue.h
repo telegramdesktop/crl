@@ -29,6 +29,16 @@ public:
 	template <typename Method>
 	void with(Method &&method) const;
 
+	template <typename Value>
+	void destroy(Value &value) const;
+
+	template <
+		typename Method,
+		typename Callback,
+		typename Result = decltype(
+			std::declval<Method>()(std::declval<Type&>()))>
+	Result producer(Method &&method, Callback &&callback) const;
+
 	template <
 		typename Method,
 		typename Result = decltype(
@@ -50,6 +60,19 @@ public:
 
 		template <typename Value>
 		void destroy(Value &value) const;
+
+		template <
+			typename Method,
+			typename Callback,
+			typename Result = decltype(
+				std::declval<Method>()(std::declval<Type&>()))>
+		Result producer(Method &&method, Callback &&callback) const;
+
+		template <
+			typename Method,
+			typename Result = decltype(
+				std::declval<Method>()(std::declval<Type&>()))>
+		Result producer_on_main(Method &&method) const;
 
 	private:
 		std::weak_ptr<Shared> _weak;
@@ -118,6 +141,61 @@ void object_on_queue<Type>::weak_wrap<Shared>::destroy(Value &value) const {
 		strong->destroy(value);
 		strong->destroy(strong);
 	}
+}
+
+template <typename Type>
+template <typename Shared>
+template <typename Method, typename Callback, typename Result>
+Result object_on_queue<Type>::weak_wrap<Shared>::producer(
+		Method &&method,
+		Callback &&callback) const {
+	return [
+		weak = *this,
+		method = std::forward<Method>(method),
+		callback = std::forward<Callback>(callback)
+	](auto consumer) mutable {
+		auto lifetime_on_queue = std::make_shared<rpl::lifetime>();
+		weak.with([
+			method = std::move(method),
+			callback = std::move(callback),
+			consumer = std::move(consumer),
+			lifetime_on_queue
+		](const Type &that) mutable {
+			method(
+				that
+			) | rpl::start_with_next([
+				callback = std::move(callback),
+				consumer = std::move(consumer)
+			](auto &&value) {
+				callback(
+					consumer,
+					std::forward<decltype(value)>(value));
+			}, *lifetime_on_queue);
+		});
+		return rpl::lifetime([
+			lifetime_on_queue = std::move(lifetime_on_queue),
+			weak = std::move(weak)
+		]() mutable {
+			weak.destroy(lifetime_on_queue);
+		});
+	};
+}
+
+template <typename Type>
+template <typename Shared>
+template <typename Method, typename Result>
+Result object_on_queue<Type>::weak_wrap<Shared>::producer_on_main(
+		Method &&method) const {
+	return producer(std::forward<Method>(method), [](
+			const auto &consumer,
+			auto &&value) {
+		crl::on_main([
+			consumer,
+			event = std::forward<decltype(value)>(value)
+		]() mutable {
+			consumer.put_next(std::move(event));
+		});
+	});
 }
 
 template <typename Type>
@@ -203,39 +281,27 @@ void object_on_queue<Type>::with(Method &&method) const {
 }
 
 template <typename Type>
+template <typename Value>
+void object_on_queue<Type>::destroy(Value &value) const {
+	_content->destroy(value);
+}
+
+template <typename Type>
+template <typename Method, typename Callback, typename Result>
+Result object_on_queue<Type>::producer(
+		Method &&method,
+		Callback &&callback) const {
+	return weak().producer(
+		std::forward<Method>(method),
+		std::forward<Callback>(callback));
+}
+
+template <typename Type>
 template <typename Method, typename Result>
 Result object_on_queue<Type>::producer_on_main(Method &&method) const {
-	return [
-		weak = this->weak(),
-		method = std::forward<Method>(method)
-	](auto consumer) mutable {
-		auto lifetime_on_queue = std::make_shared<rpl::lifetime>();
-		weak.with([
-			method = std::move(method),
-			consumer = std::move(consumer),
-			lifetime_on_queue
-		](const Type &that) mutable {
-			method(
-				that
-			) | rpl::start_with_next([
-				consumer = std::move(consumer)
-			](auto &&value) {
-				crl::on_main([
-					consumer,
-					event = std::forward<decltype(value)>(value)
-				]() mutable {
-					consumer.put_next(std::move(event));
-				});
-			}, *lifetime_on_queue);
-		});
-		return rpl::lifetime([
-			lifetime_on_queue = std::move(lifetime_on_queue),
-			weak = std::move(weak)
-		]() mutable {
-			weak.destroy(lifetime_on_queue);
-		});
-	};
+	return weak().producer_on_main(std::forward<Method>(method));
 }
+
 template <typename Type>
 auto object_on_queue<Type>::weak() -> weak_wrap<shared> {
 	return { _content };
