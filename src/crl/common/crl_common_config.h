@@ -41,3 +41,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #else // Qt
 #error "Configuration is not supported."
 #endif // !_MSC_VER && !__APPLE__ && !Qt
+
+#if __has_include(<rpl/rpl_producer.h>)
+#define CRL_ENABLE_RPL_INTEGRATION
+#endif // __has_include(<rpl/rpl_producer.h>)

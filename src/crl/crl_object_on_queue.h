@@ -7,8 +7,13 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
+#include <crl/common/crl_common_config.h>
 #include <crl/crl_queue.h>
 #include <memory>
+
+#ifdef CRL_ENABLE_RPL_INTEGRATION
+#include <rpl/producer.h>
+#endif // CRL_ENABLE_RPL_INTEGRATION
 
 namespace crl {
 namespace details {
@@ -218,6 +223,7 @@ void weak_on_queue<Type>::destroy(Value &value) const {
 	}
 }
 
+#ifdef CRL_ENABLE_RPL_INTEGRATION
 template <typename Type>
 template <typename Method, typename Callback, typename Result>
 Result weak_on_queue<Type>::producer(
@@ -269,6 +275,7 @@ Result weak_on_queue<Type>::producer_on_main(Method &&method) const {
 		});
 	});
 }
+#endif // CRL_ENABLE_RPL_INTEGRATION
 
 template <typename Type>
 template <typename ...Args>
@@ -307,6 +314,7 @@ void object_on_queue<Type>::destroy(Value &value) const {
 	_data->destroy(value);
 }
 
+#ifdef CRL_ENABLE_RPL_INTEGRATION
 template <typename Type>
 template <typename Method, typename Callback, typename Result>
 Result object_on_queue<Type>::producer(
@@ -322,6 +330,7 @@ template <typename Method, typename Result>
 Result object_on_queue<Type>::producer_on_main(Method &&method) const {
 	return weak().producer_on_main(std::forward<Method>(method));
 }
+#endif // CRL_ENABLE_RPL_INTEGRATION
 
 template <typename Type>
 auto object_on_queue<Type>::weak() -> weak_on_queue<Type> {
