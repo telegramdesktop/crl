@@ -74,6 +74,11 @@ public:
 	template <typename Value>
 	void destroy(Value &value) const;
 
+	// Returns a lambda that runs arbitrary callable on the objects queue.
+	// const auto r = runner(); r([] { make_some_work_on_queue(); });
+	auto runner() const;
+
+#ifdef CRL_ENABLE_RPL_INTEGRATION
 	template <
 		typename Method,
 		typename Callback,
@@ -86,6 +91,7 @@ public:
 		typename Result = decltype(
 			std::declval<Method>()(std::declval<Type&>()))>
 	Result producer_on_main(Method &&method) const;
+#endif // CRL_ENABLE_RPL_INTEGRATION
 
 private:
 	std::weak_ptr<my_data> _weak;
@@ -110,6 +116,7 @@ public:
 	template <typename Value>
 	void destroy(Value &value) const;
 
+#ifdef CRL_ENABLE_RPL_INTEGRATION
 	template <
 		typename Method,
 		typename Callback,
@@ -122,6 +129,7 @@ public:
 		typename Result = decltype(
 			std::declval<Method>()(std::declval<Type&>()))>
 	Result producer_on_main(Method &&method) const;
+#endif // CRL_ENABLE_RPL_INTEGRATION
 
 	weak_on_queue<Type> weak();
 	weak_on_queue<const Type> weak() const;
@@ -212,6 +220,17 @@ void weak_on_queue<Type>::with(Method &&method) const {
 		strong->with(std::move(method));
 		strong->destroy(strong);
 	}
+}
+
+template <typename Type>
+auto weak_on_queue<Type>::runner() const {
+	return [weak = *this](auto &&method) {
+		weak.with([
+			method = std::forward<decltype(method)>(method)
+		](Type&) mutable {
+			std::move(method)();
+		});
+	};
 }
 
 template <typename Type>
