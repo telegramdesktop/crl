@@ -62,10 +62,6 @@ list::~list() {
 	*_alive = false;
 }
 
-auto list::AllocateSentinel() -> BasicEntry* {
-	return new BasicEntry(nullptr);
-}
-
 } // namespace crl::details
 
 #endif // CRL_USE_COMMON_LIST
