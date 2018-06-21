@@ -13,8 +13,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 namespace crl {
 
-queue::queue() : _list(&_sentinel_semaphore) {
-}
+queue::queue() = default;
 
 queue::queue(queue_processor processor) : _main_processor(processor) {
 }
@@ -35,12 +34,6 @@ void queue::process() {
 	_queued.store(false);
 
 	if (!_list.empty()) {
-		wake_async();
-	}
-}
-
-queue::~queue() {
-	if (!_main_processor && _list.push_sentinel()) {
 		wake_async();
 	}
 }

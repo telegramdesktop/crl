@@ -11,8 +11,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 namespace crl::details {
 
-list::list(semaphore *sentinel_semaphore)
-: _sentinel_semaphore(sentinel_semaphore) {
+list::list() : _alive(new bool(true)) {
 }
 
 auto list::ReverseList(BasicEntry *entry, BasicEntry *next) -> BasicEntry* {
@@ -36,39 +35,31 @@ bool list::push_entry(BasicEntry *entry) {
 	}
 }
 
-bool list::push_sentinel() {
-	return push_entry(AllocateSentinel());
-}
-
 bool list::empty() const {
 	return (_head == nullptr);
 }
 
 bool list::process() {
 	if (auto entry = _head.exchange(nullptr)) {
-		if (auto next = entry->next) {
+		const auto alive = _alive;
+		if (const auto next = entry->next) {
 			entry = ReverseList(entry, next);
 		}
 		do {
-			auto basic = entry;
+			const auto basic = entry;
 			entry = entry->next;
-
-			if (!basic->process) {
-				// Sentinel.
-				delete basic;
-				_sentinel_semaphore->release();
+			basic->process(basic);
+			if (!*alive) {
+				delete alive;
 				return false;
 			}
-			basic->process(basic);
 		} while (entry);
 	}
 	return true;
 }
 
 list::~list() {
-	if (_sentinel_semaphore) {
-		_sentinel_semaphore->acquire();
-	}
+	*_alive = false;
 }
 
 auto list::AllocateSentinel() -> BasicEntry* {

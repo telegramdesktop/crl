@@ -67,8 +67,6 @@ public:
 		}
 	}
 
-	~queue();
-
 private:
 	// Hide dispatch_queue_t
 	struct implementation {

@@ -23,13 +23,12 @@ namespace crl::details {
 
 class list {
 public:
-	explicit list(semaphore *sentinel_semaphore = nullptr);
+	list();
 
 	template <typename Callable>
 	bool push_is_first(Callable &&callable) {
 		return push_entry(AllocateEntry(std::forward<Callable>(callable)));
 	}
-	bool push_sentinel();
 	bool process();
 	bool empty() const;
 
@@ -76,14 +75,12 @@ private:
 		return new Type(std::forward<Callable>(callable));
 	}
 
-	static BasicEntry *AllocateSentinel();
 	static BasicEntry *ReverseList(BasicEntry *entry, BasicEntry *next);
-	static void ProcessCallback(void *that);
 
 	bool push_entry(BasicEntry *entry);
 
 	std::atomic<BasicEntry*> _head = nullptr;
-	semaphore *_sentinel_semaphore = nullptr;
+	bool *_alive = nullptr;
 
 };
 

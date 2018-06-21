@@ -51,10 +51,6 @@ void queue::sync_plain(void (*callable)(void*), void *argument) {
 		callable);
 }
 
-queue::~queue() {
-	dispatch_sync_f(Unwrap(_handle.get()), nullptr, [](void*) {});
-}
-
 } // namespace crl
 
 #endif // CRL_USE_DISPATCH && !CRL_USE_COMMON_QUEUE

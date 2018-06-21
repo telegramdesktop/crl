@@ -43,8 +43,6 @@ public:
 		waiter.acquire();
 	}
 
-	~queue();
-
 private:
 	friend class details::main_queue_pointer;
 
@@ -56,7 +54,6 @@ private:
 	void process();
 
 	queue_processor _main_processor = nullptr;
-	semaphore _sentinel_semaphore;
 	details::list _list;
 	std::atomic<bool> _queued = false;
 

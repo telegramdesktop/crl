@@ -22,7 +22,7 @@ namespace crl::details {
 
 class list {
 public:
-	explicit list(semaphore *sentinel_semaphore = nullptr);
+	list();
 	list(const list &other) = delete;
 	list &operator=(const list &other) = delete;
 
@@ -30,7 +30,6 @@ public:
 	bool push_is_first(Callable &&callable) {
 		return push_entry(AllocateEntry(std::forward<Callable>(callable)));
 	}
-	bool push_sentinel();
 	bool process();
 	bool empty() const;
 
@@ -91,13 +90,10 @@ private:
 		return result;
 	}
 
-	static BasicEntry *AllocateSentinel();
-	static void ProcessCallback(void *that);
-
 	bool push_entry(BasicEntry *entry);
 
 	const std::unique_ptr<lock_free_list> _impl;
-	semaphore *_sentinel_semaphore = nullptr;
+	bool *_alive = nullptr;
 
 };
 

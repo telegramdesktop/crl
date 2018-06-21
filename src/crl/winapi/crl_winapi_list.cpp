@@ -38,9 +38,9 @@ PSLIST_ENTRY (NTAPI *RtlFirstEntrySList)(const SLIST_HEADER *ListHead) = nullptr
 
 } // namespace
 
-list::list(semaphore *sentinel_semaphore)
+list::list()
 : _impl(std::make_unique<lock_free_list>())
-, _sentinel_semaphore(sentinel_semaphore) {
+, _alive(new bool(true)) {
 	static auto initialize = [] {
 		const auto library = details::dll(
 			L"ntdll.dll",
@@ -61,45 +61,31 @@ bool list::push_entry(BasicEntry *entry) {
 		UnwrapEntry(&entry->plain)) == nullptr);
 }
 
-bool list::push_sentinel() {
-	return push_entry(AllocateSentinel());
-}
-
 bool list::empty() const {
 	return RtlFirstEntrySList(UnwrapList(_impl.get())) == nullptr;
 }
 
 bool list::process() {
 	if (auto entry = InterlockedFlushSList(UnwrapList(_impl.get()))) {
-		if (auto next = entry->Next) {
+		const auto alive = _alive;
+		if (const auto next = entry->Next) {
 			entry = ReverseList(entry, next);
 		}
 		do {
-			auto basic = reinterpret_cast<BasicEntry*>(entry);
+			const auto basic = reinterpret_cast<BasicEntry*>(entry);
 			entry = entry->Next;
-
-			if (!basic->process) {
-				// Sentinel.
-				delete basic;
-				_sentinel_semaphore->release();
+			basic->process(basic);
+			if (!*alive) {
+				delete alive;
 				return false;
 			}
-			basic->process(basic);
 		} while (entry);
 	}
 	return true;
 }
 
 list::~list() {
-	if (_sentinel_semaphore) {
-		_sentinel_semaphore->acquire();
-	}
-}
-
-auto list::AllocateSentinel() -> BasicEntry* {
-	auto result = new BasicEntry();
-	result->process = nullptr;
-	return result;
+	*_alive = false;
 }
 
 } // namespace crl::details
