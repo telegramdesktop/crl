@@ -311,6 +311,8 @@ object_on_queue<Type>::object_on_queue(Args &&...args)
 		_data->construct(std::forward<Args>(args)...);
 	} else if constexpr (with_weak_construct) {
 		_data->construct(weak(), std::forward<Args>(args)...);
+	} else {
+		static_assert(false_t(args...), "Could not find a constructor.");
 	}
 }
 
