@@ -12,3 +12,4 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include <crl/crl_queue.h>
 #include <crl/crl_on_main.h>
 #include <crl/crl_object_on_queue.h>
+#include <crl/crl_time.h>

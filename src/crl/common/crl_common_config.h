@@ -7,6 +7,14 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
+#if defined _MSC_VER
+#define CRL_USE_WINAPI_TIME
+#elif defined __APPLE__ // _MSC_VER
+#define CRL_USE_MAC_TIME
+#else // __APPLE__
+#define CRL_USE_LINUX_TIME
+#endif // !_MSC_VER && !__APPLE__
+
 #if defined _MSC_VER && !defined CRL_FORCE_QT
 
 #if defined _WIN64
