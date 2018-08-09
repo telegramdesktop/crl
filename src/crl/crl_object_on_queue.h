@@ -77,7 +77,15 @@ public:
 
 	// Returns a lambda that runs arbitrary callable on the objects queue.
 	// const auto r = runner(); r([] { make_some_work_on_queue(); });
-	auto runner() const;
+	auto runner() const {
+		return [weak = *this](auto &&method) {
+			weak.with([
+				method = std::forward<decltype(method)>(method)
+			](Type&) mutable {
+				std::move(method)();
+			});
+		};
+	}
 
 #ifdef CRL_ENABLE_RPL_INTEGRATION
 	template <
@@ -221,17 +229,6 @@ void weak_on_queue<Type>::with(Method &&method) const {
 		strong->with(std::move(method));
 		strong->destroy(strong);
 	}
-}
-
-template <typename Type>
-auto weak_on_queue<Type>::runner() const {
-	return [weak = *this](auto &&method) {
-		weak.with([
-			method = std::forward<decltype(method)>(method)
-		](Type&) mutable {
-			std::move(method)();
-		});
-	};
 }
 
 template <typename Type>
