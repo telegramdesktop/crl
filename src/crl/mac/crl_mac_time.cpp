@@ -21,7 +21,7 @@ double Frequency/* = 0.*/;
 void init() {
 	mach_timebase_info_data_t tb = { 0, 0 };
 	mach_timebase_info(&tb);
-	Frequency = (float64(tb.numer) / tb.denom) / 1000000.;
+	Frequency = (double(tb.numer) / tb.denom) / 1000000.;
 }
 
 inner_time_type current_value() {

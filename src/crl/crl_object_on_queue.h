@@ -9,6 +9,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 #include <crl/common/crl_common_config.h>
 #include <crl/crl_queue.h>
+#include <crl/crl_on_main.h>
 #include <memory>
 
 #ifdef CRL_ENABLE_RPL_INTEGRATION
