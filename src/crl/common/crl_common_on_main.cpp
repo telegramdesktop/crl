@@ -40,7 +40,7 @@ void main_queue_pointer::ungrab() {
 	}
 }
 
-void main_queue_pointer::create(queue_processor processor) {
+void main_queue_pointer::create(main_queue_processor processor) {
 	if (Counter.load(std::memory_order_acquire) != 0) {
 		throw std::bad_alloc();
 	}
@@ -53,7 +53,7 @@ void main_queue_pointer::create(queue_processor processor) {
 
 namespace crl {
 
-void init_main_queue(queue_processor processor) {
+void init_main_queue(main_queue_processor processor) {
 	Lifetime.create(processor);
 }
 

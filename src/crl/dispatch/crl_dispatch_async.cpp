@@ -13,6 +13,12 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 namespace crl::details {
 
+void empty_main_wrapper(void (*callable)(void*), void *argument) {
+	callable(argument);
+}
+
+main_queue_wrapper _main_wrapper = &empty_main_wrapper;
+
 void *background_queue_dispatch() {
 	return dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 }

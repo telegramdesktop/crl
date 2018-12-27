@@ -25,7 +25,7 @@ public:
 		grab();
 	}
 
-	void create(queue_processor processor);
+	void create(main_queue_processor processor);
 
 	explicit operator bool() const {
 		return _pointer != nullptr;
@@ -51,7 +51,11 @@ private:
 
 namespace crl {
 
-void init_main_queue(queue_processor processor);
+void init_main_queue(main_queue_processor processor);
+
+inline void wrap_main_queue(main_queue_wrapper wrapper) {
+	// If wrapping is needed here, it can be done inside processor.
+}
 
 template <typename Callable>
 inline void on_main(Callable &&callable) {

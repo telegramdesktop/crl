@@ -15,7 +15,7 @@ namespace crl {
 
 queue::queue() = default;
 
-queue::queue(queue_processor processor) : _main_processor(processor) {
+queue::queue(main_queue_processor processor) : _main_processor(processor) {
 }
 
 void queue::wake_async() {

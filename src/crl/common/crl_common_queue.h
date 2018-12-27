@@ -48,12 +48,12 @@ private:
 
 	static void ProcessCallback(void *that);
 
-	queue(queue_processor processor);
+	queue(main_queue_processor processor);
 
 	void wake_async();
 	void process();
 
-	queue_processor _main_processor = nullptr;
+	main_queue_processor _main_processor = nullptr;
 	details::list _list;
 	std::atomic<bool> _queued = false;
 

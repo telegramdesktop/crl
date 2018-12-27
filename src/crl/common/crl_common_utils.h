@@ -12,7 +12,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 namespace crl {
 
-using queue_processor = void(*)(void (*callable)(void*), void *argument);
+using main_queue_processor = void(*)(void (*callable)(void*), void *argument);
+using main_queue_wrapper = void(*)(void (*callable)(void*), void *argument);
 
 } // namespace crl
 
