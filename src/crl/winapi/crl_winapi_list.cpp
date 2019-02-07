@@ -10,7 +10,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #ifdef CRL_USE_WINAPI_LIST
 
 #include <crl/winapi/crl_winapi_dll.h>
-#include <windows.h>
+#include <crl/winapi/crl_winapi_windows_h.h>
 
 namespace crl::details {
 namespace {
