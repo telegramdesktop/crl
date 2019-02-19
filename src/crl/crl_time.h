@@ -15,7 +15,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 namespace crl {
 
-using time_type = std::int64_t;
+using time = std::int64_t;
 
 namespace details {
 
@@ -23,12 +23,12 @@ using inner_time_type = std::int64_t;
 
 void init();
 inner_time_type current_value();
-time_type convert(inner_time_type value);
+time convert(inner_time_type value);
 
 } // namespace details
 
 // Thread-safe.
-time_type time();
+time now();
 
 // Returns true if some adjustment was made.
 bool adjust_time();

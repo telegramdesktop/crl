@@ -28,8 +28,8 @@ inner_time_type current_value() {
 	return mach_absolute_time();
 }
 
-time_type convert(inner_time_type value) {
-	return time_type(value * Frequency);
+time convert(inner_time_type value) {
+	return time(value * Frequency);
 }
 
 } // namespace crl::details

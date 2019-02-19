@@ -15,7 +15,7 @@ namespace crl {
 namespace details {
 namespace {
 
-time_type LastAdjustmentTime/* = 0*/;
+time LastAdjustmentTime/* = 0*/;
 std::time_t LastAdjustmentUnixtime/* = 0*/;
 
 using seconds_type = std::uint32_t;
@@ -38,11 +38,11 @@ StaticInit::StaticInit() {
 StaticInit StaticInitObject;
 
 bool adjust_time() {
-	const auto now = time();
+	const auto now = crl::now();
 	const auto delta = (now - LastAdjustmentTime);
 	const auto unixtime = ::time(nullptr);
 	const auto real = (unixtime - LastAdjustmentUnixtime);
-	const auto seconds = (time_type(real) * 1000 - delta) / 1000;
+	const auto seconds = (time(real) * 1000 - delta) / 1000;
 
 	LastAdjustmentUnixtime = unixtime;
 	LastAdjustmentTime = now;
@@ -53,7 +53,7 @@ bool adjust_time() {
 	auto current = seconds_type(0);
 	static constexpr auto max = std::numeric_limits<seconds_type>::max();
 	while (true) {
-		if (time_type(current) + seconds > time_type(max)) {
+		if (time(current) + seconds > time(max)) {
 			return false;
 		}
 		const auto next = current + seconds_type(seconds);
@@ -64,14 +64,14 @@ bool adjust_time() {
 	return false;
 }
 
-time_type compute_adjustment() {
-	return time_type(AdjustSeconds.load()) * 1000;
+time compute_adjustment() {
+	return time(AdjustSeconds.load()) * 1000;
 }
 
 } // namespace
 } // namespace details
 
-time_type time() {
+time now() {
 	const auto elapsed = details::current_value() - details::StartValue;
 	return details::convert(elapsed) + details::compute_adjustment();
 }

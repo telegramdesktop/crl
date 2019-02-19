@@ -24,8 +24,8 @@ inner_time_type current_value() {
 	return seconds * 1000 + milliseconds;
 }
 
-time_type convert(inner_time_type value) {
-	return time_type(value);
+time convert(inner_time_type value) {
+	return time(value);
 }
 
 } // namespace crl::details
