@@ -34,8 +34,10 @@ public:
 	template <typename Method>
 	void with(Method &&method) const;
 
-	template <typename Value>
-	void destroy(Value &value) const;
+	template <
+		typename Value,
+		typename = std::enable_if_t<!std::is_reference_v<Value>>>
+	void destroy(Value &&value) const;
 
 	~object_on_queue_data();
 
@@ -72,8 +74,10 @@ public:
 	template <typename Method>
 	void with(Method &&method) const;
 
-	template <typename Value>
-	void destroy(Value &value) const;
+	template <
+		typename Value,
+		typename = std::enable_if_t<!std::is_reference_v<Value>>>
+	void destroy(Value &&value) const;
 
 	// Returns a lambda that runs arbitrary callable on the objects queue.
 	// const auto r = runner(); r([] { make_some_work_on_queue(); });
@@ -122,8 +126,10 @@ public:
 	template <typename Method>
 	void with(Method &&method) const;
 
-	template <typename Value>
-	void destroy(Value &value) const;
+	template <
+		typename Value,
+		typename = std::enable_if_t<!std::is_reference_v<Value>>>
+	void destroy(Value &&value) const;
 
 #ifdef CRL_ENABLE_RPL_INTEGRATION
 	template <
@@ -205,8 +211,8 @@ void object_on_queue_data<Type>::with(Method &&method) const {
 }
 
 template <typename Type>
-template <typename Value>
-void object_on_queue_data<Type>::destroy(Value &value) const {
+template <typename Value, typename>
+void object_on_queue_data<Type>::destroy(Value &&value) const {
 	_queue.async([moved = std::move(value)]{});
 }
 
@@ -227,16 +233,18 @@ template <typename Method>
 void weak_on_queue<Type>::with(Method &&method) const {
 	if (auto strong = _weak.lock()) {
 		strong->with(std::move(method));
-		strong->destroy(strong);
+		strong->destroy(std::move(strong));
 	}
 }
 
 template <typename Type>
-template <typename Value>
-void weak_on_queue<Type>::destroy(Value &value) const {
+template <typename Value, typename>
+void weak_on_queue<Type>::destroy(Value &&value) const {
 	if (auto strong = _weak.lock()) {
-		strong->destroy(value);
-		strong->destroy(strong);
+		strong->destroy(std::move(value));
+		strong->destroy(std::move(strong));
+	} else {
+		[[maybe_unused]] const auto moved = std::move(value);
 	}
 }
 
@@ -273,7 +281,7 @@ Result weak_on_queue<Type>::producer(
 			lifetime_on_queue = std::move(lifetime_on_queue),
 			weak = std::move(weak)
 		]() mutable {
-			weak.destroy(lifetime_on_queue);
+			weak.destroy(std::move(lifetime_on_queue));
 		});
 	};
 }
@@ -328,9 +336,9 @@ void object_on_queue<Type>::with(Method &&method) const {
 }
 
 template <typename Type>
-template <typename Value>
-void object_on_queue<Type>::destroy(Value &value) const {
-	_data->destroy(value);
+template <typename Value, typename>
+void object_on_queue<Type>::destroy(Value &&value) const {
+	_data->destroy(std::move(value));
 }
 
 #ifdef CRL_ENABLE_RPL_INTEGRATION
@@ -363,7 +371,7 @@ auto object_on_queue<Type>::weak() const -> weak_on_queue<const Type> {
 
 template <typename Type>
 object_on_queue<Type>::~object_on_queue() {
-	_data->destroy(_data);
+	_data->destroy(std::move(_data));
 }
 
 } // namespace
