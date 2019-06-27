@@ -22,6 +22,7 @@ using seconds_type = std::uint32_t;
 std::atomic<seconds_type> AdjustSeconds/* = 0*/;
 
 inner_time_type StartValue/* = 0*/;
+inner_profile_type StartProfileValue/* = 0*/;
 
 struct StaticInit {
 	StaticInit();
@@ -29,6 +30,7 @@ struct StaticInit {
 
 StaticInit::StaticInit() {
 	StartValue = current_value();
+	StartProfileValue = current_profile_value();
 
 	init();
 
@@ -68,12 +70,23 @@ time compute_adjustment() {
 	return time(AdjustSeconds.load()) * 1000;
 }
 
+profile_time compute_profile_adjustment() {
+	return compute_adjustment() * 1000;
+}
+
 } // namespace
 } // namespace details
 
 time now() {
 	const auto elapsed = details::current_value() - details::StartValue;
 	return details::convert(elapsed) + details::compute_adjustment();
+}
+
+profile_time profile() {
+	const auto elapsed = details::current_profile_value()
+		- details::StartProfileValue;
+	return details::convert_profile(elapsed)
+		+ details::compute_profile_adjustment();
 }
 
 bool adjust_time() {
