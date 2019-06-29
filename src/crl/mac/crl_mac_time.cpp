@@ -23,7 +23,7 @@ void init() {
 	mach_timebase_info_data_t tb = { 0, 0 };
 	mach_timebase_info(&tb);
 	Frequency = (double(tb.numer) / tb.denom) / 1000000.;
-	ProfileFrequency = (double(tb.number) / tb.denom) / 1000.;
+	ProfileFrequency = (double(tb.numer) / tb.denom) / 1000.;
 }
 
 inner_time_type current_value() {
