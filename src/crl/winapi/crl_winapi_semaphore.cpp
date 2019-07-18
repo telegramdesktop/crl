@@ -16,7 +16,7 @@ namespace crl {
 auto semaphore::implementation::create() -> pointer {
 	auto result = CreateSemaphore(nullptr, 0, 1, nullptr);
 	if (!result) {
-		throw std::bad_alloc();
+		std::terminate();
 	}
 	return result;
 }

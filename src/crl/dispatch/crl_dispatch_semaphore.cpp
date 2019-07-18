@@ -10,6 +10,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #ifdef CRL_USE_DISPATCH
 
 #include <dispatch/dispatch.h>
+#include <exception>
 
 namespace crl {
 namespace {
@@ -23,7 +24,7 @@ dispatch_semaphore_t Unwrap(void *value) {
 auto semaphore::implementation::create() -> pointer {
 	auto result = dispatch_semaphore_create(0);
 	if (!result) {
-		throw std::bad_alloc();
+		std::terminate();
 	}
 	return result;
 }

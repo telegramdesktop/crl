@@ -9,6 +9,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 #if defined CRL_USE_COMMON_QUEUE || !defined CRL_USE_DISPATCH
 
+#include <exception>
+
 namespace {
 
 crl::queue *Queue/* = nullptr*/;
@@ -42,7 +44,7 @@ void main_queue_pointer::ungrab() {
 
 void main_queue_pointer::create(main_queue_processor processor) {
 	if (Counter.load(std::memory_order_acquire) != 0) {
-		throw std::bad_alloc();
+		std::terminate();
 	}
 	Queue = new queue(processor);
 	Counter.store(1, std::memory_order_release);

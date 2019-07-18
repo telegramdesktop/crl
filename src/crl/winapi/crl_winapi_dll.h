@@ -54,7 +54,7 @@ public:
 
 private:
 	[[noreturn]] static void Failed() {
-		throw std::exception("Could not load method from dll.");
+		std::terminate();
 	}
 
 	HMODULE _handle = nullptr;

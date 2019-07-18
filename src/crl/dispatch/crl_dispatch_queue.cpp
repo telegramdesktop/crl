@@ -10,6 +10,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #if defined CRL_USE_DISPATCH && !defined CRL_USE_COMMON_QUEUE
 
 #include <dispatch/dispatch.h>
+#include <exception>
 
 namespace crl {
 namespace {
@@ -23,7 +24,7 @@ dispatch_queue_t Unwrap(void *value) {
 auto queue::implementation::create() -> pointer {
 	auto result = dispatch_queue_create(nullptr, DISPATCH_QUEUE_SERIAL);
 	if (!result) {
-		throw std::bad_alloc();
+		std::terminate();
 	}
 	return result;
 }
